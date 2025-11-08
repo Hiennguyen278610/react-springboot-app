@@ -1,4 +1,4 @@
-package com.flogin.dto.account;
+package com.flogin.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class AccountResponse {
-    private long id;
+public class UserResponse {
     private String username;
+    private String mail;
 }

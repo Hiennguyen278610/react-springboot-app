@@ -5,31 +5,31 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.flogin.entity.Account;
-import com.flogin.repository.AccountRepository;
+import com.flogin.entity.User;
+import com.flogin.repository.UserRepository;
 
 @Service
-public class AccountService {
+public class UserService {
     @Autowired
-    private AccountRepository repo;
+    private UserRepository repo;
 
-    public Account create(Account account) {
-        if (repo.existsByUsername(account.getUsername())) 
+    public User create(User user) {
+        if (repo.existsByUsername(user.getUsername())) 
             throw new RuntimeException("Username đã tồn tại");
-        return repo.save(account);
+        return repo.save(user);
     }
 
-    public List<Account> getAll() {
+    public List<User> getAll() {
         return repo.findAll();
     }
 
-    public Account getById(Long id) {
+    public User getById(Long id) {
         return repo.findById(id).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
     }
 
-    public Account update(Long id, Account account) {
-        Account result = getById(id);
-        result.setPassword(account.getPassword());
+    public User update(Long id, User user) {
+        User result = getById(id);
+        result.setPassword(user.getPassword());
         return repo.save(result);
     }
 

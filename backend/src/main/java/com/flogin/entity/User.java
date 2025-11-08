@@ -19,10 +19,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "accounts")
+@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-public class Account {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -32,4 +32,6 @@ public class Account {
 
     @Column(nullable = false, length = 100)
     String password;
+
+    String mail;
 }

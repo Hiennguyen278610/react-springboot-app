@@ -1,8 +1,13 @@
+import { Routes, Route, Link } from "react-router-dom"
+import Login from "./page/admin/Login"
+
 export default function App() {
   return (
-    <div className="p-8">
-      <h1 className="text-10xl font-bold text-red-800">10đ testing
-      </h1>
+    <div className="w-screen h-screen">
+      <Link to="/login"></Link>
+      <Routes>
+        <Route path="/login" element={<Login />}/>
+      </Routes>
     </div>
   )
 }
