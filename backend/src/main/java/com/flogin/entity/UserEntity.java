@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,16 +23,18 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(unique = true, nullable =false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     String username;
 
     @Column(nullable = false, length = 100)
     String password;
 
+    @Email
     String mail;
+
 }

@@ -2,34 +2,47 @@ package com.flogin.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.flogin.entity.User;
+import com.flogin.entity.UserEntity;
+import com.flogin.exception.ExistsException;
+import com.flogin.exception.NotFoundException;
 import com.flogin.repository.UserRepository;
 
 @Service
-public class UserService {
-    @Autowired
-    private UserRepository repo;
+@RequiredArgsConstructor
 
-    public User create(User user) {
+public class UserService {
+    private final UserRepository repo;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserEntity create(UserEntity user) {
         if (repo.existsByUsername(user.getUsername())) 
-            throw new RuntimeException("Username đã tồn tại");
+            throw new ExistsException("Username đã tồn tại");
+        if (repo.existsByMail(user.getMail()))
+            throw new ExistsException("Email đã được sử dụng");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
-    public List<User> getAll() {
+    public List<UserEntity> getAll() {
         return repo.findAll();
     }
 
-    public User getById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+    public UserEntity getById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new NotFoundException("Tài khoản không tồn tại"));
     }
 
-    public User update(Long id, User user) {
-        User result = getById(id);
-        result.setPassword(user.getPassword());
+    public UserEntity getByUsername (String username) {
+        return repo.findByUsername(username).orElseThrow(() -> new NotFoundException("Tài khoản không đúng"));
+    }
+
+    public UserEntity update(Long id, UserEntity user) {
+        UserEntity result = getById(id);
+        result.setPassword(passwordEncoder.encode(user.getPassword()));
+        result.setMail(user.getMail());
         return repo.save(result);
     }
 

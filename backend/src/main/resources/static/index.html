@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOGIN Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230a5fff'/><path d='M34 64h60M64 34v60' stroke='%23fff' stroke-width='12' stroke-linecap='round'/></svg>">
+    <meta name="description" content="Welcome to the FLOGIN admin backend">
+</head>
+<body class="h-full bg-slate-950 text-slate-100">
+    <div class="min-h-full flex flex-col items-center justify-center px-6 py-12">
+        <div class="w-full max-w-3xl rounded-3xl bg-slate-900/70 border border-slate-800 shadow-2xl shadow-blue-900/30 backdrop-blur">
+            <div class="p-10 sm:p-16 text-center space-y-6">
+                <div class="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-sm tracking-[0.4em] uppercase text-blue-200/70">FLOGIN Backend</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-white">Kết nối thành công</h1>
+                    <p class="text-base text-slate-300 max-w-2xl mx-auto">
+                        Spring boot backend đang chạy bình thường. <br>Hãy lựa các định hướng bên dưới để tiếp tục.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="https://github.com/Hiennguyen278610" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition">
+                        About author
+                    </a>
+                    <a href="http://localhost:3000/login" class="group inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg shadow-blue-900/30">
+                        Open Admin login
+                        <svg class="w-4 h-4 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L21 10.5m0 0l-3.75 3.75M21 10.5H9" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

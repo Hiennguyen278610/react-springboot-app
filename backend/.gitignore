@@ -34,7 +34,10 @@ sts4-cache/
 /nbdist/
 /.nb-gradle/
 
-# OS
+# Environment & OS
+.env
+.env.local
+.env.*.local
 .DS_Store
 Thumbs.db
 
