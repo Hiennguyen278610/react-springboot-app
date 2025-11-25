@@ -21,14 +21,14 @@
                     <p class="text-sm tracking-[0.4em] uppercase text-blue-200/70">FLOGIN Backend</p>
                     <h1 class="text-3xl sm:text-4xl font-semibold text-white">Kết nối thành công</h1>
                     <p class="text-base text-slate-300 max-w-2xl mx-auto">
-                        Spring boot backend đang chạy bình thường. <br>Hãy lựa các định hướng bên dưới để tiếp tục.
+                        Spring boot backend đang chạy bình thường. <br>Hãy chọn các định hướng bên dưới để tiếp tục.
                     </p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="https://github.com/Hiennguyen278610" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition">
-                        About author
+                    <a id="demoLink" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition">
+                        Demo project
                     </a>
-                    <a href="http://localhost:3000/login" class="group inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg shadow-blue-900/30">
+                    <a id="loginLink" class="group inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg shadow-blue-900/30">
                         Open Admin login
                         <svg class="w-4 h-4 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L21 10.5m0 0l-3.75 3.75M21 10.5H9" />
@@ -38,5 +38,17 @@
             </div>
         </div>
     </div>
+    <script>
+      // chạy khi DOM load
+      fetch('config')
+        .then(res => res.json())
+        .then(cfg => {
+          const apiBase = cfg.apiBase || '';
+          document.getElementById('demoLink').href = window.location.origin + (apiBase) + '/example.html';
+          document.getElementById('loginLink').href = (cfg.frontendUrl) + '/login';
+        })
+        .catch(() => {
+        });
+    </script>
 </body>
 </html>

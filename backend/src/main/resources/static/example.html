@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechAdmin - CEO Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#2D3748',    /* Dark Slate */
+                        secondary: '#718096',  /* Cool Gray */
+                        accent: '#5A67D8',     /* Soft Indigo */
+                        dark: '#1A202C',
+                        bg: '#F3F4F6',         /* Light Cool Gray Background */
+                        surface: '#FFFFFF',
+                        border: '#E2E8F0',
+                        error: '#E53E3E',
+                        success: '#38A169',
+                        warning: '#D69E2E'
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                        '3xl': '2rem',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px 0 rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 20px rgba(90, 103, 216, 0.3)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F3F4F6; color: #2D3748; }
+        .scroller::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scroller::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom styles for the active nav item */
+        .nav-item.active-nav {
+            background-color: #2D3748;
+            color: white;
+            box-shadow: 0 4px 12px rgba(45, 55, 72, 0.3);
+        }
+        .nav-item:not(.active-nav):hover {
+            color: #2D3748;
+            background-color: #EDF2F7;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-bg h-screen overflow-hidden">
+
+    <!-- LOGIN LAYOUT (Hidden by default, controlled by JS) -->
+    <div id="authLayout" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <!-- Decorative Background Blobs -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" style="animation-delay: 2s"></div>
+        </div>
+
+        <div class="bg-surface w-full max-w-md p-8 md:p-10 rounded-3xl shadow-soft border border-gray-100 relative fade-in">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-primary/30">
+                    <i class="ph-fill ph-polygon"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-primary tracking-tight">Welcome Back!</h1>
+                <p class="text-gray-400 text-sm mt-2">Enter your credentials to access TechAdmin.</p>
+            </div>
+
+            <form onsubmit="router.handleLogin(event)" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Email Address</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                        <input type="email" value="admin@tech.co" class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary placeholder-gray-400" placeholder="name@company.com">
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center ml-1">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Password</label>
+                        <a href="#" class="text-xs font-bold text-accent hover:text-indigo-600">Forgot?</a>
+                    </div>
+                    <div class="relative">
+                        <i class="ph-bold ph-lock-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                        <input type="password" value="password123" class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary placeholder-gray-400" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-500/20 hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 mt-4">
+                    Sign In <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-gray-400">Don't have an account? <a href="#" class="text-accent font-bold hover:underline">Contact Support</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD LAYOUT (Hidden by default) -->
+    <div id="dashboardLayout" class="flex h-screen overflow-hidden hidden opacity-0 transition-opacity duration-500">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-surface w-72 flex-shrink-0 hidden md:flex flex-col transition-all duration-300 z-20 m-4 rounded-3xl shadow-soft h-[calc(100%-2rem)]">
+            <div class="h-20 flex items-center px-8">
+                <div class="text-2xl font-bold text-primary flex items-center gap-2 tracking-tight">
+                    <i class="ph-fill ph-polygon text-accent"></i> TechAdmin
+                </div>
+            </div>
+
+            <div class="px-6 mb-6">
+                <div class="relative">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Search" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-accent/50 outline-none text-gray-600 placeholder-gray-400">
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-2 overflow-y-auto scroller">
+                <button onclick="router.navigate('home')" class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-gray-500 transition-all active-nav" data-page="home">
+                    <i class="ph ph-squares-four text-lg"></i> Dashboard
+                </button>
+                <button onclick="router.navigate('users')" class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-gray-500 transition-all" data-page="users">
+                    <i class="ph ph-users text-lg"></i> User Management
+                </button>
+                <button onclick="router.navigate('products')" class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-gray-500 transition-all" data-page="products">
+                    <i class="ph ph-package text-lg"></i> Product Management
+                </button>
+                
+                <div class="pt-4 pb-2 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Other</div>
+                <button class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-gray-500 transition-all">
+                    <i class="ph ph-receipt text-lg"></i> Invoices
+                </button>
+                <button class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-gray-500 transition-all">
+                    <i class="ph ph-wallet text-lg"></i> My Wallets
+                </button>
+                <!-- Logout Button added -->
+                <button onclick="router.logout()" class="nav-item w-full flex items-center gap-4 px-5 py-3.5 text-sm font-semibold rounded-2xl text-error/80 hover:text-error hover:bg-red-50 transition-all mt-4">
+                    <i class="ph ph-sign-out text-lg"></i> Sign Out
+                </button>
+            </nav>
+
+            <div class="p-4 mt-auto">
+                <div class="bg-gray-50 p-3 rounded-2xl flex items-center gap-3 border border-gray-100">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gray-700 to-gray-900 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                        FC
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-dark truncate">Future CEO</p>
+                        <p class="text-xs text-gray-500 truncate">admin@tech.co</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-primary"><i class="ph-bold ph-caret-up"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col h-full relative overflow-hidden">
+            <!-- Header -->
+            <header class="h-20 flex items-center justify-between px-8 z-10 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <button id="sidebarToggle" class="md:hidden text-gray-500 hover:text-primary bg-white p-2 rounded-xl shadow-sm">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    <h2 id="pageTitle" class="text-2xl font-bold text-primary tracking-tight">Dashboard</h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button class="w-10 h-10 bg-white rounded-xl shadow-soft flex items-center justify-center text-gray-500 hover:text-accent hover:shadow-md transition-all relative">
+                        <i class="ph ph-bell text-xl"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+                    </button>
+                    <button class="w-10 h-10 bg-white rounded-xl shadow-soft flex items-center justify-center text-gray-500 hover:text-accent hover:shadow-md transition-all">
+                        <i class="ph ph-gear text-xl"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Area -->
+            <main id="mainContent" class="flex-1 overflow-y-auto px-8 pb-8 scroller">
+                <!-- Content will be injected here by JS -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" class="fixed inset-0 bg-gray-900/20 z-10 hidden md:hidden backdrop-blur-sm"></div>
+
+    <!-- Generic Modal -->
+    <div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900/30 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-95 opacity-0 border border-gray-100" id="modalContent">
+            <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-bold text-primary">Title</h3>
+                <button onclick="ui.closeModal()" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-error hover:text-white transition-colors"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div id="modalBody" class="p-8">
+                <!-- Form injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-white shadow-2xl shadow-gray-200/50 rounded-2xl p-4 transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-4 min-w-[300px] border border-gray-100">
+        <div id="toastIconContainer" class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+            <i id="toastIcon" class="ph-fill ph-check-circle text-xl text-success"></i>
+        </div>
+        <div>
+            <h4 id="toastTitle" class="font-bold text-gray-800 text-sm">Success</h4>
+            <p id="toastMessage" class="text-xs text-gray-500 mt-0.5">Action completed.</p>
+        </div>
+    </div>
+
+    <!-- Templates & Scripts -->
+    <script>
+        // --- DATA STORE ---
+        const store = {
+            // ... (Same data as before)
+            users: [
+                { id: 1, name: "Nguyen Van A", email: "vana@gmail.com", role: "Admin", status: "Active", joined: "2023-10-15" },
+                { id: 2, name: "Tran Thi B", email: "thib@company.com", role: "Editor", status: "Active", joined: "2023-11-02" },
+                { id: 3, name: "Le Van C", email: "vanc@tech.co", role: "Viewer", status: "Inactive", joined: "2024-01-20" },
+                { id: 4, name: "Hoang D", email: "hoangd@dev.io", role: "Admin", status: "Active", joined: "2024-02-10" },
+                { id: 5, name: "Pham E", email: "phame@design.net", role: "Editor", status: "Active", joined: "2024-03-05" }
+            ],
+            products: [
+                { id: 101, name: "MacBook Pro M3", category: "Laptop", price: 2500, stock: 15, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=100&q=80" },
+                { id: 102, name: "Iphone 15 Pro", category: "Phone", price: 999, stock: 42, image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=100&q=80" },
+                { id: 103, name: "Sony WH-1000XM5", category: "Audio", price: 349, stock: 0, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=100&q=80" },
+                { id: 104, name: "Mechanical Keyboard", category: "Accessory", price: 150, stock: 120, image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=100&q=80" }
+            ],
+            stats: {
+                revenue: [12000, 19000, 15000, 25000, 20000, 32000, 28000, 35000, 40000], 
+                users: [50, 100, 150, 200, 300, 450]
+            }
+        };
+
+        // --- UTILS ---
+        const utils = {
+            generateId: () => Math.floor(Math.random() * 100000),
+            formatCurrency: (num) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num)
+        };
+
+        // --- UI CONTROLLER ---
+        const ui = {
+            showToast: (title, message, type = 'success') => {
+                const toast = document.getElementById('toast');
+                const iconContainer = document.getElementById('toastIconContainer');
+                const icon = document.getElementById('toastIcon');
+                
+                icon.className = 'ph-fill text-xl ' + (type === 'success' ? 'ph-check-circle text-success' : type === 'error' ? 'ph-x-circle text-error' : 'ph-warning text-warning');
+                iconContainer.className = 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ' + (type === 'success' ? 'bg-green-50' : type === 'error' ? 'bg-red-50' : 'bg-yellow-50');
+
+                document.getElementById('toastTitle').textContent = title;
+                document.getElementById('toastMessage').textContent = message;
+
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            },
+            
+            // ... (Modal logic same as before)
+            openModal: (title, htmlContent) => {
+                const modal = document.getElementById('modal');
+                const content = document.getElementById('modalContent');
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalBody').innerHTML = htmlContent;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            },
+
+            closeModal: () => {
+                const modal = document.getElementById('modal');
+                const content = document.getElementById('modalContent');
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            },
+
+            confirmDelete: (callback) => {
+                const html = `
+                    <div class="text-center">
+                        <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ph-fill ph-trash text-4xl text-error"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Item?</h3>
+                        <p class="text-gray-500 mb-8 px-4">This action cannot be undone. Are you sure you want to proceed?</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="ui.closeModal()" class="w-full py-3 bg-gray-50 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition">Cancel</button>
+                            <button id="confirmDeleteBtn" class="w-full py-3 bg-error text-white rounded-xl font-semibold hover:bg-red-600 shadow-lg shadow-red-500/30 transition">Yes, Delete</button>
+                        </div>
+                    </div>
+                `;
+                ui.openModal("Confirmation", html);
+                document.getElementById('confirmDeleteBtn').onclick = () => {
+                    callback();
+                    ui.closeModal();
+                };
+            }
+        };
+
+        // --- PAGES & RENDERING ---
+        const pages = {
+            // ... (Pages logic same as before)
+            home: () => {
+                const totalRev = store.stats.revenue.reduce((a, b) => a + b, 0);
+                return `
+                    <div class="fade-in grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column (Stats & Charts) -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Stats Row -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50 hover:shadow-lg transition-all cursor-default">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                                            <i class="ph-fill ph-currency-dollar text-xl"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-success bg-green-50 px-2 py-1 rounded-lg flex items-center gap-1">
+                                            <i class="ph-bold ph-arrow-up"></i> 12.8%
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-500 text-sm font-medium mb-1">Total Earnings</p>
+                                    <h3 class="text-2xl font-bold text-primary">${utils.formatCurrency(totalRev)}</h3>
+                                    <p class="text-xs text-gray-400 mt-2">+ $120.8 than last month</p>
+                                </div>
+                                <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50 hover:shadow-lg transition-all cursor-default">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                                            <i class="ph-fill ph-shopping-cart text-xl"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-warning bg-yellow-50 px-2 py-1 rounded-lg flex items-center gap-1">
+                                            <i class="ph-bold ph-arrow-down"></i> 2.4%
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-500 text-sm font-medium mb-1">Spending</p>
+                                    <h3 class="text-2xl font-bold text-primary">$576.76</h3>
+                                    <p class="text-xs text-gray-400 mt-2">- $6.8 than last month</p>
+                                </div>
+                                <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50 hover:shadow-lg transition-all cursor-default">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                                            <i class="ph-fill ph-piggy-bank text-xl"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-success bg-green-50 px-2 py-1 rounded-lg flex items-center gap-1">
+                                            <i class="ph-bold ph-arrow-up"></i> 6.7%
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-500 text-sm font-medium mb-1">Total Saving</p>
+                                    <h3 class="text-2xl font-bold text-primary">$421.29</h3>
+                                    <p class="text-xs text-gray-400 mt-2">+ $46.1 than last month</p>
+                                </div>
+                            </div>
+
+                            <!-- Balance Summary Chart -->
+                            <div class="bg-surface p-8 rounded-3xl shadow-soft border border-gray-50">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="font-bold text-lg text-primary">Balance Summary</h3>
+                                    <button class="text-sm text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-gray-100">
+                                        March <i class="ph-bold ph-caret-down"></i>
+                                    </button>
+                                </div>
+                                <div class="h-64">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50 col-span-1 md:col-span-2">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="font-bold text-lg text-primary">Recent Transactions</h3>
+                                        <button class="text-gray-400 hover:text-primary"><i class="ph-bold ph-dots-three-vertical text-xl"></i></button>
+                                    </div>
+                                    <div class="space-y-4">
+                                        ${store.users.slice(0, 3).map((user, i) => `
+                                            <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-2xl transition group">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-12 h-12 rounded-xl ${i === 0 ? 'bg-blue-100 text-blue-600' : i === 1 ? 'bg-purple-100 text-purple-600' : 'bg-orange-100 text-orange-600'} flex items-center justify-center text-xl">
+                                                        <i class="ph-fill ${i === 0 ? 'ph-paypal-logo' : i === 1 ? 'ph-credit-card' : 'ph-bank'}"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-bold text-primary text-sm">${i === 0 ? 'Paypal' : i === 1 ? 'Credit Card' : 'Bank Transfer'}</p>
+                                                        <p class="text-xs text-gray-400">${user.joined} • ${user.name}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="font-bold text-primary text-sm ${i % 2 === 0 ? 'text-success' : 'text-primary'}">${i % 2 === 0 ? '+' : '-'} $${(Math.random() * 1000).toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column (Cards & Extra Stats) -->
+                        <div class="space-y-8">
+                            <div class="bg-white rounded-3xl shadow-soft p-6 border border-gray-50">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="font-bold text-lg text-primary">My Cards</h3>
+                                    <div class="flex gap-2">
+                                        <button class="text-gray-400 hover:text-primary"><i class="ph ph-caret-left"></i></button>
+                                        <button class="text-gray-400 hover:text-primary"><i class="ph ph-caret-right"></i></button>
+                                    </div>
+                                </div>
+                                <div class="bg-[#2D3748] rounded-2xl p-6 text-white relative overflow-hidden shadow-lg shadow-gray-400/50">
+                                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+                                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+
+                                    <div class="flex justify-between items-start mb-8">
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">Current Balance</p>
+                                            <h3 class="text-2xl font-bold tracking-wide">$34,000.00</h3>
+                                        </div>
+                                        <i class="ph-fill ph-contactless-payment text-2xl opacity-80"></i>
+                                    </div>
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">Card Holder</p>
+                                            <p class="font-medium text-sm">Future CEO</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-gray-400 text-xs mb-1">Expires</p>
+                                            <p class="font-medium text-sm">03/26</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3 mt-6">
+                                    <button class="flex-1 py-2.5 rounded-xl bg-gray-50 text-gray-600 text-sm font-semibold hover:bg-gray-100 flex items-center justify-center gap-2"><i class="ph ph-paper-plane-tilt"></i> Send</button>
+                                    <button class="flex-1 py-2.5 rounded-xl bg-gray-50 text-gray-600 text-sm font-semibold hover:bg-gray-100 flex items-center justify-center gap-2"><i class="ph ph-download-simple"></i> Request</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50">
+                                <h3 class="font-bold text-lg text-primary mb-6">Quick Transaction</h3>
+                                <div class="flex items-center justify-between gap-2 overflow-x-auto pb-2">
+                                    <div class="flex flex-col items-center gap-2 min-w-[60px]">
+                                        <button class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 border border-dashed border-gray-300 hover:border-primary hover:text-primary transition">
+                                            <i class="ph-bold ph-plus"></i>
+                                        </button>
+                                        <span class="text-xs font-medium text-gray-500">Add</span>
+                                    </div>
+                                    ${['Devi', 'John', 'Will', 'Kris'].map((name, i) => `
+                                        <div class="flex flex-col items-center gap-2 min-w-[60px]">
+                                            <img src="https://ui-avatars.com/api/?name=${name}&background=${['C3DAFE', 'FED7D7', 'FEFCBF', 'D1FAE5'][i]}&color=333" class="w-12 h-12 rounded-full border-2 border-white shadow-sm">
+                                            <span class="text-xs font-medium text-gray-500">${name}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="mt-6">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-2">
+                                        <span>Amount</span>
+                                        <span>$120.00</span>
+                                    </div>
+                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-primary w-1/3 rounded-full"></div>
+                                    </div>
+                                    <button class="w-full mt-4 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-gray-500/30 hover:shadow-xl transition text-sm">Send Money</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-surface p-6 rounded-3xl shadow-soft border border-gray-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-bold text-lg text-primary">Expenses</h3>
+                                    <button class="text-xs text-gray-400 hover:text-primary">See All</button>
+                                </div>
+                                <div class="relative h-48 flex items-center justify-center">
+                                    <canvas id="trafficChart"></canvas>
+                                    <div class="absolute text-center">
+                                        <p class="text-xs text-gray-400">Total</p>
+                                        <p class="font-bold text-primary text-lg">$9,670</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            users: () => {
+                return `
+                    <div class="fade-in bg-surface rounded-3xl shadow-soft border border-gray-50 flex flex-col h-full overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                            <div class="relative w-full md:w-72">
+                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="userSearch" placeholder="Search users..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition text-sm">
+                            </div>
+                            <button onclick="actions.openUserModal()" class="bg-primary hover:bg-gray-800 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg shadow-gray-500/20 font-medium text-sm">
+                                <i class="ph-bold ph-plus"></i> Add User
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto flex-1">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                                    <tr>
+                                        <th class="px-8 py-4">User</th>
+                                        <th class="px-6 py-4">Role</th>
+                                        <th class="px-6 py-4">Status</th>
+                                        <th class="px-8 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody" class="divide-y divide-gray-50 text-sm text-gray-700">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-8 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-between items-center text-xs text-gray-500">
+                            <span>Showing 1-5 of ${store.users.length}</span>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-white border border-gray-200 rounded-lg hover:border-gray-300">Prev</button>
+                                <button class="px-3 py-1 bg-white border border-gray-200 rounded-lg hover:border-gray-300">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            products: () => {
+                return `
+                    <div class="fade-in bg-surface rounded-3xl shadow-soft border border-gray-50 flex flex-col h-full overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                            <h3 class="font-bold text-lg text-primary pl-2">Product Inventory</h3>
+                            <button onclick="actions.openProductModal()" class="bg-accent hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-500/30 font-medium text-sm">
+                                <i class="ph-bold ph-plus"></i> Add Product
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto flex-1 p-0">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                                    <tr>
+                                        <th class="px-8 py-4">Product</th>
+                                        <th class="px-6 py-4">Category</th>
+                                        <th class="px-6 py-4">Price</th>
+                                        <th class="px-6 py-4">Stock</th>
+                                        <th class="px-8 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productTableBody" class="divide-y divide-gray-50 text-sm text-gray-700">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        // --- BUSINESS LOGIC ---
+        const actions = {
+            // ... (Same actions as before)
+            renderUserTable: (filter = "") => {
+                const tbody = document.getElementById('userTableBody');
+                if (!tbody) return;
+                
+                const filtered = store.users.filter(u => u.name.toLowerCase().includes(filter.toLowerCase()) || u.email.toLowerCase().includes(filter.toLowerCase()));
+                
+                tbody.innerHTML = filtered.map(user => `
+                    <tr class="hover:bg-gray-50/80 transition group">
+                        <td class="px-8 py-4 flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 text-gray-600 flex items-center justify-center font-bold text-sm shadow-sm">
+                                ${user.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="font-bold text-primary text-sm">${user.name}</div>
+                                <div class="text-xs text-gray-400 font-medium">${user.email}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 font-medium">${user.role}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border ${user.status === 'Active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}">
+                                ${user.status}
+                            </span>
+                        </td>
+                        <td class="px-8 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="actions.openUserModal(${user.id})" class="p-2 text-gray-400 hover:text-accent hover:bg-indigo-50 rounded-lg transition"><i class="ph-bold ph-pencil-simple"></i></button>
+                                <button onclick="actions.deleteUser(${user.id})" class="p-2 text-gray-400 hover:text-error hover:bg-red-50 rounded-lg transition"><i class="ph-bold ph-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                if(filtered.length === 0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-12 text-gray-400 font-medium">No users found.</td></tr>`;
+            },
+
+            openUserModal: (id = null) => {
+                const isEdit = id !== null;
+                const user = isEdit ? store.users.find(u => u.id === id) : { name: '', email: '', role: 'Viewer', status: 'Active' };
+                
+                const formHtml = `
+                    <form onsubmit="actions.saveUser(event, ${id})" class="space-y-5">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Full Name</label>
+                            <input type="text" name="name" value="${user.name}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition font-medium text-primary">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Email</label>
+                            <input type="email" name="email" value="${user.email}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition font-medium text-primary">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Role</label>
+                                <div class="relative">
+                                    <select name="role" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl appearance-none focus:ring-2 focus:ring-primary outline-none font-medium text-gray-600">
+                                        <option ${user.role === 'Admin' ? 'selected' : ''}>Admin</option>
+                                        <option ${user.role === 'Editor' ? 'selected' : ''}>Editor</option>
+                                        <option ${user.role === 'Viewer' ? 'selected' : ''}>Viewer</option>
+                                    </select>
+                                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Status</label>
+                                <div class="relative">
+                                    <select name="status" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl appearance-none focus:ring-2 focus:ring-primary outline-none font-medium text-gray-600">
+                                        <option ${user.status === 'Active' ? 'selected' : ''}>Active</option>
+                                        <option ${user.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                    </select>
+                                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-6 flex justify-end gap-3">
+                            <button type="button" onclick="ui.closeModal()" class="px-6 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition">Cancel</button>
+                            <button type="submit" class="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-500/20 transition transform active:scale-95">${isEdit ? 'Save Changes' : 'Create User'}</button>
+                        </div>
+                    </form>
+                `;
+                ui.openModal(isEdit ? 'Edit User' : 'New User', formHtml);
+            },
+
+            saveUser: (e, id) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                if (id) {
+                    const index = store.users.findIndex(u => u.id === id);
+                    store.users[index] = { ...store.users[index], ...data };
+                    ui.showToast('Updated', `User ${data.name} updated successfully.`);
+                } else {
+                    store.users.unshift({ id: utils.generateId(), ...data, joined: new Date().toISOString().split('T')[0] });
+                    ui.showToast('Created', `User ${data.name} created successfully.`);
+                }
+                actions.renderUserTable();
+                ui.closeModal();
+            },
+
+            deleteUser: (id) => {
+                ui.confirmDelete(() => {
+                    store.users = store.users.filter(u => u.id !== id);
+                    actions.renderUserTable();
+                    ui.showToast('Deleted', 'User removed from system.', 'error');
+                });
+            },
+
+            renderProductTable: () => {
+                const tbody = document.getElementById('productTableBody');
+                if (!tbody) return;
+
+                tbody.innerHTML = store.products.map(p => `
+                    <tr class="hover:bg-gray-50/80 transition group">
+                        <td class="px-8 py-4 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl overflow-hidden border border-gray-100 shadow-sm relative group-hover:shadow-md transition">
+                                <img src="${p.image}" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-bold text-primary text-sm">${p.name}</span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 font-medium text-sm"><span class="bg-gray-100 px-3 py-1 rounded-lg text-xs font-bold text-gray-600">${p.category}</span></td>
+                        <td class="px-6 py-4 font-bold text-primary">${utils.formatCurrency(p.price)}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full ${p.stock < 10 ? 'bg-error' : 'bg-success'}" style="width: ${Math.min(p.stock, 100)}%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-400">${p.stock}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="actions.openProductModal(${p.id})" class="p-2 text-gray-400 hover:text-accent hover:bg-indigo-50 rounded-lg transition"><i class="ph-bold ph-pencil-simple"></i></button>
+                                <button onclick="actions.deleteProduct(${p.id})" class="p-2 text-gray-400 hover:text-error hover:bg-red-50 rounded-lg transition"><i class="ph-bold ph-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            openProductModal: (id = null) => {
+                const isEdit = id !== null;
+                const prod = isEdit ? store.products.find(p => p.id === id) : { name: '', category: 'General', price: 0, stock: 0, image: '' };
+                
+                const formHtml = `
+                    <form onsubmit="actions.saveProduct(event, ${id})" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2 space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Product Name</label>
+                                <input type="text" name="name" value="${prod.name}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Price ($)</label>
+                                <input type="number" name="price" value="${prod.price}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Stock</label>
+                                <input type="number" name="stock" value="${prod.stock}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary">
+                            </div>
+                            <div class="md:col-span-2 space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Category</label>
+                                <input type="text" name="category" value="${prod.category}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-primary">
+                            </div>
+                             <div class="md:col-span-2 space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Image URL</label>
+                                <input type="url" name="image" value="${prod.image}" placeholder="https://..." class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition font-medium text-gray-500 text-sm">
+                            </div>
+                        </div>
+                        <div class="pt-6 flex justify-end gap-3">
+                            <button type="button" onclick="ui.closeModal()" class="px-6 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition">Cancel</button>
+                            <button type="submit" class="px-8 py-3 bg-accent text-white font-bold rounded-xl hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition transform active:scale-95">${isEdit ? 'Update' : 'Add Item'}</button>
+                        </div>
+                    </form>
+                `;
+                ui.openModal(isEdit ? 'Edit Product' : 'Add Product', formHtml);
+            },
+
+            saveProduct: (e, id) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                if(!data.image) data.image = "https://via.placeholder.com/100";
+
+                if (id) {
+                    const index = store.products.findIndex(p => p.id === id);
+                    store.products[index] = { ...store.products[index], ...data };
+                    ui.showToast('Success', 'Product updated.');
+                } else {
+                    store.products.unshift({ id: utils.generateId(), ...data });
+                    ui.showToast('Success', 'Product added to inventory.');
+                }
+                actions.renderProductTable();
+                ui.closeModal();
+            },
+
+            deleteProduct: (id) => {
+                ui.confirmDelete(() => {
+                    store.products = store.products.filter(p => p.id !== id);
+                    actions.renderProductTable();
+                    ui.showToast('Deleted', 'Product removed.', 'error');
+                });
+            }
+        };
+
+        // --- ROUTER & INIT ---
+        const router = {
+            state: {
+                isLoggedIn: false
+            },
+
+            handleLogin: (e) => {
+                e.preventDefault();
+                // Simulating login process
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i>';
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+                setTimeout(() => {
+                    router.state.isLoggedIn = true;
+                    router.navigate('home');
+                    ui.showToast('Welcome back!', 'Successfully logged into dashboard.');
+                }, 800);
+            },
+
+            logout: () => {
+                router.state.isLoggedIn = false;
+                router.navigate('login');
+                ui.showToast('Logged out', 'See you again soon.', 'warning');
+            },
+
+            navigate: (page) => {
+                const authLayout = document.getElementById('authLayout');
+                const dashboardLayout = document.getElementById('dashboardLayout');
+
+                if (!router.state.isLoggedIn && page !== 'login') {
+                    router.navigate('login');
+                    return;
+                }
+
+                if (page === 'login') {
+                    authLayout.classList.remove('hidden');
+                    dashboardLayout.classList.add('hidden');
+                    dashboardLayout.classList.remove('opacity-100');
+                    dashboardLayout.classList.add('opacity-0');
+                    return;
+                }
+
+                // Show Dashboard
+                authLayout.classList.add('hidden');
+                dashboardLayout.classList.remove('hidden');
+                // Small delay to allow display:flex to apply before opacity transition
+                setTimeout(() => {
+                    dashboardLayout.classList.remove('opacity-0');
+                    dashboardLayout.classList.add('opacity-100');
+                }, 10);
+                
+                // Update Sidebar
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    if(el.dataset.page === page) {
+                        el.classList.add('active-nav');
+                    } else {
+                        el.classList.remove('active-nav');
+                    }
+                });
+
+                // Update Title
+                const titles = { home: 'Dashboard', users: 'User Management', products: 'Product Inventory' };
+                document.getElementById('pageTitle').innerText = titles[page];
+
+                // Render Content
+                document.getElementById('mainContent').innerHTML = pages[page]();
+
+                // Post-Render Scripts
+                if (page === 'home') router.initCharts();
+                if (page === 'users') {
+                    actions.renderUserTable();
+                    document.getElementById('userSearch').addEventListener('input', (e) => actions.renderUserTable(e.target.value));
+                }
+                if (page === 'products') actions.renderProductTable();
+                
+                // Mobile handling
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('mobileOverlay');
+                if(!sidebar.classList.contains('hidden') && window.innerWidth < 768) {
+                    sidebar.classList.add('hidden');
+                    overlay.classList.add('hidden');
+                }
+            },
+
+            initCharts: () => {
+                // Config for smooth wave chart like reference
+                const ctxRev = document.getElementById('revenueChart').getContext('2d');
+                const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(90, 103, 216, 0.2)');
+                gradient.addColorStop(1, 'rgba(90, 103, 216, 0)');
+
+                new Chart(ctxRev, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Balance',
+                            data: store.stats.revenue,
+                            borderColor: '#5A67D8',
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4, // Smooth curve
+                            pointBackgroundColor: '#FFFFFF',
+                            pointBorderColor: '#5A67D8',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#2D3748', titleColor: '#fff', bodyColor: '#fff', padding: 10, cornerRadius: 8, displayColors: false } }, 
+                        scales: { 
+                            y: { grid: { borderDash: [5, 5], color: '#E2E8F0' }, ticks: { color: '#A0AEC0', font: { family: 'Inter' } } }, 
+                            x: { grid: { display: false }, ticks: { color: '#A0AEC0', font: { family: 'Inter' } } } 
+                        } 
+                    }
+                });
+
+                // Doughnut chart with cutout like reference
+                new Chart(document.getElementById('trafficChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Services', 'Shopping', 'Salary'],
+                        datasets: [{
+                            data: [55, 30, 15],
+                            backgroundColor: ['#2D3748', '#5A67D8', '#CBD5E0'], // Dark Slate, Indigo, Gray
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        cutout: '80%', 
+                        plugins: { legend: { display: false } } 
+                    }
+                });
+            }
+        };
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start at Login Page
+            router.navigate('login');
+
+            const toggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+
+            toggle.addEventListener('click', () => {
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.add('fixed', 'inset-y-0', 'left-0'); // Mobile styling
+                overlay.classList.toggle('hidden');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('hidden');
+                overlay.classList.add('hidden');
+            });
+        });
+
+    </script>
+</body>
+</html>
