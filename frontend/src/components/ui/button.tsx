@@ -19,7 +19,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        flogin: "bg-red fg-white"
+        flogin_activate: "bg-primary text-primary-foreground hover:bg-secondary-foreground",
+        flogin_deactivate: "bg-background text-primary hover:bg-muted"
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -52,7 +53,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className}))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   )
