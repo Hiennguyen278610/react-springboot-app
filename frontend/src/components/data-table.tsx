@@ -86,16 +86,17 @@ export function DataTable<TData, TValue>({ columns, data, onAdd, addButtonLabel 
             </div>
             <div className="flex-1 overflow-hidden border-t-2 border-secondary/20">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="select-none">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="bg-secondary/10">
                                 {headerGroup.headers.map((header, index) => {
                                     const isFirst = index === 0
                                     const isLast = index === headerGroup.headers.length - 1
+                                    const isMiddle = !isFirst && !isLast
                                     return (
                                         <TableHead
                                             key={header.id}
-                                            className={`text-primary font-bold ${isFirst ? "pl-10" : ""} ${isLast ? "pr-8 text-right" : ""}`}
+                                            className={`text-primary font-bold ${isFirst ? "pl-10 text-left" : ""} ${isLast ? "pr-8 text-right" : ""} ${isMiddle ? "text-center" : ""}`}
                                         >
                                             {header.isPlaceholder
                                                 ? null
@@ -119,9 +120,10 @@ export function DataTable<TData, TValue>({ columns, data, onAdd, addButtonLabel 
                                     {row.getVisibleCells().map((cell, index) => {
                                         const isFirst = index === 0
                                         const isLast = index === row.getVisibleCells().length - 1
+                                        const isMiddle = !isFirst && !isLast
                                         return (
                                             <TableCell key={cell.id}
-                                                className={`${isFirst ? "pl-10" : ""} ${isLast ? "pr-5" : ""}`}>
+                                                className={`${isFirst ? "pl-10 text-left" : ""} ${isLast ? "pr-5 text-right" : ""} ${isMiddle ? "text-center" : ""}`}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </TableCell>
                                         )
@@ -138,7 +140,7 @@ export function DataTable<TData, TValue>({ columns, data, onAdd, addButtonLabel 
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end p-4 border-t-2 gap-x-4 border-secondary/20 bg-inherit">
+            <div className="flex items-center justify-end p-4 border-t-2 gap-x-4 border-secondary/20 bg-inherit select-none">
                 <Button
                     variant="flogin_deactivate"
                     className="border-1.0 border-secondary"
