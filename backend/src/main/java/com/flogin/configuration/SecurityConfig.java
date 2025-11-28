@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/config").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/products/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }
