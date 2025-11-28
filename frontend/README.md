@@ -71,3 +71,21 @@ export default defineConfig([
   },
 ])
 ```
+
+```
+src/
+├── components/
+│   ├── LoginForm.tsx
+│   └── ProtectedRoute.tsx
+├── contexts/
+│   └── AuthContext.tsx
+├── hooks/
+│   └── useAuth.ts
+├── services/
+│   └── auth.service.ts
+├── schemas/
+│   └── auth.schema.ts
+└── types/
+    └── auth.types.ts
+
+```

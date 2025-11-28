@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.flogin.configuration.JwtTokenProvider;
 import com.flogin.dto.login.LoginRequest;
 import com.flogin.dto.login.LoginResponse;
+import com.flogin.dto.user.UserResponse;
 import com.flogin.entity.UserEntity;
 import com.flogin.mapper.UserMapper;
 import com.flogin.repository.UserRepository;
@@ -28,5 +29,26 @@ public class AuthService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
             throw new AuthException("Mật khẩu không chính xác", HttpStatus.UNAUTHORIZED);
         return new LoginResponse(true, "Đăng nhập thành công", jwtTokenProvider.generateToken(user.getUsername()), UserMapper.toResponse(user));
+    }
+
+    public UserResponse getCurrentUser(String authorizationHeader) {
+        String token = extractToken(authorizationHeader);
+
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new AuthException("Token không hợp lệ", HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+        UserEntity user = repo.findByUsername(username)
+                .orElseThrow(() -> new AuthException("Không tìm thấy người dùng", HttpStatus.NOT_FOUND));
+
+        return UserMapper.toResponse(user);
+    }
+
+    private String extractToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new AuthException("Thiếu header xác thực", HttpStatus.UNAUTHORIZED);
+        }
+        return authorizationHeader.substring(7);
     }
 }

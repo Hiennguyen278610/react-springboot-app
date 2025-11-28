@@ -24,7 +24,8 @@ public class UserRequest {
     @Size(max = 100, message = "username tối đa 100 kí tự")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$", message = "password phải có cả chữ và số")
     private String password;
-
+    
     @Email(message = "Email không hợp lệ")
-    private String email;
+    @NotBlank(message = "Email không được để trống")
+    private String mail;
 }

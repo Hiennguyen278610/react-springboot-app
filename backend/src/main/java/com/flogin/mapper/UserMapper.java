@@ -6,7 +6,7 @@ import com.flogin.entity.UserEntity;
 
 public class UserMapper {
     public static UserEntity toEntity (UserRequest res) {
-        return new UserEntity(null, res.getUsername(), res.getPassword(), res.getEmail());
+        return new UserEntity(null, res.getUsername(), res.getPassword(), res.getMail());
     }
 
     public static UserResponse toResponse (UserEntity user) {

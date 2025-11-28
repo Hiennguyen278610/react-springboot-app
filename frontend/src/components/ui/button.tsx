@@ -20,7 +20,9 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         flogin_activate: "bg-primary text-primary-foreground hover:bg-secondary-foreground",
-        flogin_deactivate: "bg-background text-primary hover:bg-muted"
+        flogin_deactivate: "bg-background text-primary hover:bg-muted",
+        flogin_edit: "bg-inherit text-secondary hover:bg-accent/20 hover:text-accent",
+        flogin_delete: "bg-inherit text-secondary hover:bg-destructive/20 hover:text-destructive",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
