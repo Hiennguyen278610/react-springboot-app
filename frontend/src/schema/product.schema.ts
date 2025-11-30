@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { commonValidations } from '@/utils/validation';
 
 export const Category = {
     DIEN_TU: 'DIEN_TU',
@@ -42,24 +43,10 @@ export const productResponse = z.object({
 });
 
 export const productRequest = z.object({
-    name: z.string()
-        .min(1, 'Tên sản phẩm không được để trống')
-        .min(3, 'Tên sản phẩm tối thiểu 3 ký tự')
-        .max(100, 'Tên sản phẩm tối đa 100 ký tự'),
-
-    price: z.number({ message: 'Giá sản phẩm không được để trống' })
-        .gt(0, 'Giá sản phẩm phải lớn hơn 0')
-        .max(999999999, 'Giá sản phẩm tối đa 999,999,999'),
-
-    quantity: z.number({ message: 'Số lượng không được để trống' })
-        .min(0, 'Số lượng không được âm')
-        .max(99999, 'Số lượng tối đa 99,999'),
-
-    description: z.string()
-        .max(500, 'Mô tả tối đa 500 ký tự')
-        .optional()
-        .nullable(),
-
+    name: commonValidations.productName,
+    price: commonValidations.price,
+    quantity: commonValidations.quantity,
+    description: commonValidations.description,
     category: categorySchema,
 });
 

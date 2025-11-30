@@ -13,6 +13,8 @@ import com.flogin.mapper.UserMapper;
 import com.flogin.repository.UserRepository;
 
 import com.flogin.exception.AuthException;
+import com.flogin.exception.NotFoundException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,14 +27,17 @@ public class AuthService {
 
     public LoginResponse authenticate(LoginRequest loginRequest) {
         UserEntity user = repo.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new AuthException("Tài khoản hoặc mật khẩu không đúng", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Tài khoản hoặc mật khẩu không đúng"));
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
             throw new AuthException("Mật khẩu không chính xác", HttpStatus.UNAUTHORIZED);
-        return new LoginResponse(true, "Đăng nhập thành công", jwtTokenProvider.generateToken(user.getUsername()), UserMapper.toResponse(user));
+        return new LoginResponse(true, "Đăng nhập thành công", jwtTokenProvider.generateToken(user.getUsername()),UserMapper.toResponse(user));
     }
 
     public UserResponse getCurrentUser(String authorizationHeader) {
-        String token = extractToken(authorizationHeader);
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new AuthException("Thiếu header xác thực", HttpStatus.UNAUTHORIZED);
+        }
+        String token = authorizationHeader.substring(7);
 
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthException("Token không hợp lệ", HttpStatus.UNAUTHORIZED);
@@ -43,12 +48,5 @@ public class AuthService {
                 .orElseThrow(() -> new AuthException("Không tìm thấy người dùng", HttpStatus.NOT_FOUND));
 
         return UserMapper.toResponse(user);
-    }
-
-    private String extractToken(String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new AuthException("Thiếu header xác thực", HttpStatus.UNAUTHORIZED);
-        }
-        return authorizationHeader.substring(7);
     }
 }
