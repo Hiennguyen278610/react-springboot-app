@@ -1295,4 +1295,3 @@ jobs:
 ---
 
 **Bài tập lớn môn Kiểm Thử Phần Mềm - Niên khóa 2024-2025**
-

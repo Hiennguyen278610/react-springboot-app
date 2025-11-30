@@ -1,0 +1,38 @@
+{
+  "validUser": {
+    "username": "Hyan2005",
+    "password": "sugoi123"
+  },
+  "invalidUser": {
+    "username": "wronguser",
+    "password": "wrongpass123"
+  },
+  "emptyUsername": {
+    "username": "",
+    "password": "Test123"
+  },
+  "emptyPassword": {
+    "username": "testuser",
+    "password": ""
+  },
+  "shortUsername": {
+    "username": "ab",
+    "password": "Test123"
+  },
+  "shortPassword": {
+    "username": "testuser",
+    "password": "abc12"
+  },
+  "invalidUsernameChars": {
+    "username": "user@name",
+    "password": "Test123"
+  },
+  "passwordOnlyLetters": {
+    "username": "testuser",
+    "password": "password"
+  },
+  "passwordOnlyNumbers": {
+    "username": "testuser",
+    "password": "123456"
+  }
+}

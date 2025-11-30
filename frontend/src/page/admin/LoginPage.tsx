@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -68,27 +67,30 @@ export default function LoginPage() {
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <Input type="text" placeholder="admin123" className="pl-11 pr-4 py-5 rounded-xl"
+                                data-testid="username-input"
                                 {...register("username")}
                                 disabled={isLoading} />
                         </div>
-                        {errors.username && (<p className="text-sm text-red-500">{errors.username.message}</p>)}
+                        {errors.username && (<p className="text-sm text-red-500" data-testid="username-error">{errors.username.message}</p>)}
 
                         <Label className="text-primary font-bold">Mật khẩu</Label>
                         <div className="relative">
                             <LockKeyholeIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <Input type="password" className="pl-11 pr-4 py-5 rounded-xl"
+                                data-testid="password-input"
                                 {...register("password")}
                                 disabled={isLoading} />
                         </div>
-                        {errors.password && (<p className="text-sm text-red-500">{errors.password.message}</p>)}
+                        {errors.password && (<p className="text-sm text-red-500" data-testid="password-error">{errors.password.message}</p>)}
 
-                        {error && (<p className="text-sm text-red-500 text-center mt-2">{error}</p>)}
+                        {error && (<p className="text-sm text-red-500 text-center mt-2" data-testid="login-message">{error}</p>)}
                     </form>
                 </CardContent>
 
                 <CardFooter className="flex flex-col gap-y-4">
                     <Button type="submit" form="login-form" variant="flogin_activate"
                         className="w-full hover:font-bold p-5 rounded-xl"
+                        data-testid="login-button"
                         disabled={isLoading}>
                         {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Đang đăng nhập...</>) : ("Đăng nhập")}
                     </Button>
