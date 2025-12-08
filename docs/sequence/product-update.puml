@@ -1,0 +1,143 @@
+@startuml product-update
+title Sequence Diagram: Cập nhật sản phẩm
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":ProductPage"
+participant dialog as ":ProductEdit"
+participant productService as ":ProductService"
+participant controller as ":ProductController"
+participant service as ":ProductService"
+participant mapper as ":ProductMapper"
+participant repo as ":ProductRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên thực hiện
+    chỉnh sửa thông tin
+    sản phẩm hiện có
+end note
+
+admin -> ui : Ấn nút "Sửa" trên sản phẩm
+activate ui
+
+ui -> ui : setSelectedProduct(product: ProductResponse)
+ui -> dialog : setEditDialogOpen(true)
+activate dialog
+
+dialog -> dialog : reset(product: ProductResponse)
+note left
+    Điền sẵn thông tin
+    sản phẩm hiện tại
+    vào form
+end note
+
+dialog --> admin : Hiển thị form với thông tin sản phẩm
+
+admin -> dialog : Chỉnh sửa thông tin sản phẩm
+
+dialog -> dialog : validate(productRequest: ProductRequest)
+note left
+    Kiểm tra:
+    - name: 1-100 ký tự
+    - price: >= 0
+    - quantity: >= 0
+    - description: <= 500 ký tự
+    - category: hợp lệ
+end note
+
+alt Validation Flow: Dữ liệu không hợp lệ
+    dialog --> admin : Hiển thị lỗi validation
+else Basic Flow: Dữ liệu hợp lệ
+    admin -> dialog : Ấn nút "Cập nhật"
+    
+    dialog -> productService : update(id: number, product: ProductRequest)
+    activate productService
+    
+    productService -> controller : PUT /products/{id} (ProductRequest, Authorization: Bearer token)
+    activate controller
+    
+    controller -> service : update(id: Long, req: ProductRequest)
+    activate service
+    
+    service -> service : getById(id: Long)
+    service -> repo : findById(id: Long)
+    activate repo
+    
+    repo -> db : SELECT * FROM products WHERE id = ?
+    activate db
+    db --> repo : ResultSet
+    deactivate db
+    
+    repo --> service : Optional<ProductEntity>
+    deactivate repo
+    
+    alt NotFoundException Flow: Sản phẩm không tồn tại
+        service --> controller : throw NotFoundException("Sản phẩm không tồn tại")
+        controller --> productService : 404 Not Found
+        productService --> dialog : Error: "Sản phẩm không tồn tại"
+        dialog --> admin : Hiển thị lỗi
+    else Basic Flow: Sản phẩm tồn tại
+        service -> repo : existsByName(name: String)
+        activate repo
+        
+        repo -> db : SELECT COUNT(*) FROM products WHERE name = ?
+        activate db
+        db --> repo : count
+        deactivate db
+        
+        repo --> service : Boolean
+        deactivate repo
+        
+        alt ExistsException Flow: Tên mới đã tồn tại (và khác tên cũ)
+            service --> controller : throw ExistsException("Tên sản phẩm đã tồn tại")
+            controller --> productService : 409 Conflict
+            productService --> dialog : Error: "Tên sản phẩm đã tồn tại"
+            dialog --> admin : Hiển thị lỗi
+        else Basic Flow: Tên hợp lệ
+            service -> mapper : updateEntity(entity: ProductEntity, req: ProductRequest)
+            activate mapper
+            mapper --> service : void
+            deactivate mapper
+            
+            service -> repo : save(entity: ProductEntity)
+            activate repo
+            
+            repo -> db : UPDATE products SET name=?, price=?, quantity=?, description=?, category=? WHERE id=?
+            activate db
+            db --> repo : ProductEntity
+            deactivate db
+            
+            repo --> service : ProductEntity
+            deactivate repo
+            
+            service --> controller : ProductEntity
+            deactivate service
+            
+            controller -> mapper : toResponse(entity: ProductEntity)
+            activate mapper
+            mapper --> controller : ProductResponse
+            deactivate mapper
+            
+            controller --> productService : 200 OK (ProductResponse)
+            deactivate controller
+            
+            productService --> dialog : ProductResponse
+            deactivate productService
+            
+            dialog -> ui : onProductUpdated()
+            ui -> ui : fetchProducts()
+            ui -> ui : setSelectedProduct(null)
+            dialog -> dialog : onOpenChange(false)
+            
+            dialog --> admin : Đóng dialog, cập nhật danh sách
+        end
+    end
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

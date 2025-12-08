@@ -121,8 +121,7 @@ public class ProductControllerTest {
                 new BigDecimal("20000000"),
                 15,
                 "Smartphone flagship của Samsung",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPost("/products", request);
@@ -147,8 +146,7 @@ public class ProductControllerTest {
                 new BigDecimal("20000000"),
                 15,
                 "Mô tả sản phẩm",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPost("/products", request);
@@ -167,8 +165,7 @@ public class ProductControllerTest {
                 new BigDecimal("20000000"),
                 15,
                 "Mô tả sản phẩm",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPost("/products", request);
@@ -187,8 +184,7 @@ public class ProductControllerTest {
                 new BigDecimal("0"),
                 15,
                 "Mô tả sản phẩm",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPost("/products", request);
@@ -207,8 +203,7 @@ public class ProductControllerTest {
                 new BigDecimal("20000000"),
                 -1,
                 "Mô tả sản phẩm",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPost("/products", request);
@@ -267,8 +262,7 @@ public class ProductControllerTest {
                 new BigDecimal("30000000"),
                 20,
                 "Smartphone cao cấp nhất",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPut("/products/" + testProduct.getId(), request);
@@ -292,8 +286,7 @@ public class ProductControllerTest {
                 new BigDecimal("30000000"),
                 20,
                 "Smartphone cao cấp nhất",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPut("/products/99999", request);
@@ -312,8 +305,7 @@ public class ProductControllerTest {
                 new BigDecimal("30000000"),
                 20,
                 "Mô tả",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ResultActions action = performPut("/products/" + testProduct.getId(), request);
@@ -331,7 +323,7 @@ public class ProductControllerTest {
 
         // Assert
         action.andExpect(status().isNoContent());
-        
+
         // Verify
         performGet("/products/" + testProduct.getId())
                 .andExpect(status().isNotFound());

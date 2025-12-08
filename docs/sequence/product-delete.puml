@@ -1,0 +1,97 @@
+@startuml product-delete
+title Sequence Diagram: Xóa sản phẩm
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":ProductPage"
+participant dialog as ":ProductDelete"
+participant productService as ":ProductService"
+participant controller as ":ProductController"
+participant service as ":ProductService"
+participant repo as ":ProductRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên thực hiện
+    xóa sản phẩm khỏi
+    hệ thống
+end note
+
+admin -> ui : Ấn nút "Xóa" trên sản phẩm
+activate ui
+
+ui -> ui : setSelectedProduct(product: ProductResponse)
+ui -> dialog : setDeleteDialogOpen(true)
+activate dialog
+
+dialog --> admin : Hiển thị dialog xác nhận xóa
+
+alt Basic Flow: Xác nhận xóa
+    admin -> dialog : Ấn nút "Xóa sản phẩm"
+    
+    dialog -> productService : delete(id: number)
+    activate productService
+    
+    productService -> controller : DELETE /products/{id} (Authorization: Bearer token)
+    activate controller
+    
+    controller -> service : delete(id: Long)
+    activate service
+    
+    service -> service : getById(id: Long)
+    service -> repo : findById(id: Long)
+    activate repo
+    
+    repo -> db : SELECT * FROM products WHERE id = ?
+    activate db
+    db --> repo : ResultSet
+    deactivate db
+    
+    repo --> service : Optional<ProductEntity>
+    deactivate repo
+    
+    alt NotFoundException Flow: Sản phẩm không tồn tại
+        service --> controller : throw NotFoundException("Sản phẩm không tồn tại")
+        controller --> productService : 404 Not Found
+        productService --> dialog : Error: "Sản phẩm không tồn tại"
+        dialog --> admin : Hiển thị lỗi
+    else Basic Flow: Sản phẩm tồn tại
+        service -> repo : delete(entity: ProductEntity)
+        activate repo
+        
+        repo -> db : DELETE FROM products WHERE id = ?
+        activate db
+        db --> repo : void
+        deactivate db
+        
+        repo --> service : void
+        deactivate repo
+        
+        service --> controller : void
+        deactivate service
+        
+        controller --> productService : 204 No Content
+        deactivate controller
+        
+        productService --> dialog : void
+        deactivate productService
+        
+        dialog -> ui : onProductDeleted()
+        ui -> ui : fetchProducts()
+        ui -> ui : setSelectedProduct(null)
+        dialog -> dialog : onOpenChange(false)
+        
+        dialog --> admin : Đóng dialog, cập nhật danh sách
+    end
+else Alternative Flow: Hủy xóa
+    admin -> dialog : Ấn nút "Hủy"
+    dialog -> dialog : onOpenChange(false)
+    dialog --> admin : Đóng dialog
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

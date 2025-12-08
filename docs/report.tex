@@ -1,0 +1,516 @@
+\documentclass[a4paper]{article}
+\usepackage{vntex}
+%\usepackage[english,vietnam]{babel}
+%\usepackage[utf8]{inputenc}
+
+%\usepackage[utf8]{inputenc}
+%\usepackage[francais]{babel}
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage[framemethod=tikz]{mdframed}% For highlighting paragraph backgrounds
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usepackage{listings}
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={á}{{\'a}}1 {à}{{\`a}}1 {ả}{{\h{a}}}1 {ã}{{\~a}}1 {ạ}{{\d{a}}}1
+    {Á}{{\'A}}1 {À}{{\`A}}1 {Ả}{{\h{A}}}1 {Ã}{{\~A}}1 {Ạ}{{\d{A}}}1
+    {ă}{{\u{a}}}1 {ắ}{{\'{a}}}1 {ằ}{{\`{a}}}1 {ẳ}{{\h{a}}}1 {ẵ}{{\~{a}}}1 {ặ}{{\d{a}}}1
+    {Ă}{{\u{A}}}1 {Ắ}{{\'{A}}}1 {Ằ}{{\`{A}}}1 {Ẳ}{{\h{A}}}1 {Ẵ}{{\~{A}}}1 {Ặ}{{\d{A}}}1
+    {â}{{\^a}}1 {ấ}{{\'{a}}}1 {ầ}{{\`{a}}}1 {ẩ}{{\h{a}}}1 {ẫ}{{\~{a}}}1 {ậ}{{\d{a}}}1
+    {Â}{{\^A}}1 {Ấ}{{\'{A}}}1 {Ầ}{{\`{A}}}1 {Ẩ}{{\h{A}}}1 {Ẫ}{{\~{A}}}1 {Ậ}{{\d{A}}}1
+    {đ}{{\d{}}}1 {Đ}{{\D{}}}1
+    {é}{{\'e}}1 {è}{{\`e}}1 {ẻ}{{\h{e}}}1 {ẽ}{{\~e}}1 {ẹ}{{\d{e}}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ẻ}{{\h{E}}}1 {Ẽ}{{\~E}}1 {Ẹ}{{\d{E}}}1
+    {ê}{{\^e}}1 {ế}{{\'{e}}}1 {ề}{{\`{e}}}1 {ể}{{\h{e}}}1 {ễ}{{\~{e}}}1 {ệ}{{\d{e}}}1
+    {Ê}{{\^E}}1 {Ế}{{\'{E}}}1 {Ề}{{\`{E}}}1 {Ể}{{\h{E}}}1 {Ễ}{{\~{E}}}1 {Ệ}{{\d{E}}}1
+    {í}{{\'i}}1 {ì}{{\`i}}1 {ỉ}{{\h{i}}}1 {ĩ}{{\~i}}1 {ị}{{\d{i}}}1
+    {Í}{{\'I}}1 {Ì}{{\`I}}1 {Ỉ}{{\h{I}}}1 {Ĩ}{{\~I}}1 {Ị}{{\d{I}}}1
+    {ó}{{\'o}}1 {ò}{{\`o}}1 {ỏ}{{\h{o}}}1 {õ}{{\~o}}1 {ọ}{{\d{o}}}1
+    {Ó}{{\'O}}1 {Ò}{{\`O}}1 {Ỏ}{{\h{O}}}1 {Õ}{{\~O}}1 {Ọ}{{\d{O}}}1
+    {ô}{{\^o}}1 {ố}{{\'{o}}}1 {ồ}{{\`{o}}}1 {ổ}{{\h{o}}}1 {ỗ}{{\~{o}}}1 {ộ}{{\d{o}}}1
+    {Ô}{{\^O}}1 {Ố}{{\'{O}}}1 {Ồ}{{\`{O}}}1 {Ổ}{{\h{O}}}1 {Ỗ}{{\~{O}}}1 {Ộ}{{\d{O}}}1
+    {ơ}{{\horn{o}}}1 {ớ}{{\'{o}}}1 {ờ}{{\`{o}}}1 {ở}{{\h{o}}}1 {ỡ}{{\~{o}}}1 {ợ}{{\d{o}}}1
+    {Ơ}{{\horn{O}}}1 {Ớ}{{\'{O}}}1 {Ờ}{{\`{O}}}1 {Ở}{{\h{O}}}1 {Ỡ}{{\~{O}}}1 {Ợ}{{\d{O}}}1
+    {ú}{{\'u}}1 {ù}{{\`u}}1 {ủ}{{\h{u}}}1 {ũ}{{\~u}}1 {ụ}{{\d{u}}}1
+    {Ú}{{\'U}}1 {Ù}{{\`U}}1 {Ủ}{{\h{U}}}1 {Ũ}{{\~U}}1 {Ụ}{{\d{U}}}1
+    {ư}{{\horn{u}}}1 {ứ}{{\'{u}}}1 {ừ}{{\`{u}}}1 {ử}{{\h{u}}}1 {ữ}{{\~{u}}}1 {ự}{{\d{u}}}1
+    {Ư}{{\horn{U}}}1 {Ứ}{{\'{U}}}1 {Ừ}{{\`{U}}}1 {Ử}{{\h{U}}}1 {Ữ}{{\~{U}}}1 {Ự}{{\d{U}}}1
+    {ý}{{\'y}}1 {ỳ}{{\`y}}1 {ỷ}{{\h{y}}}1 {ỹ}{{\~y}}1 {ỵ}{{\d{y}}}1
+    {Ý}{{\'Y}}1 {Ỳ}{{\`Y}}1 {Ỷ}{{\h{Y}}}1 {Ỹ}{{\~Y}}1 {Ỵ}{{\d{Y}}}1
+}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 								% PSTricks with the standard color package
+
+\newtheorem{theorem}{{\bf Định lý}}
+\newtheorem{property}{{\bf Tính chất}}
+\newtheorem{proposition}{{\bf Mệnh đề}}
+\newtheorem{corollary}[proposition]{{\bf Hệ quả}}
+\newtheorem{lemma}[proposition]{{\bf Bổ đề}}
+
+\everymath{\color{blue}}
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=8mm, height=8mm]{logoITSGUsmall.png}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	%\includegraphics[width=8mm, height=8mm]{hcmut.png} & %
+	\begin{tabular}{l}
+		\textbf{\bf \ttfamily Trường Đại học Sài Gòn}\\
+		\textbf{\bf \ttfamily Khoa Công Nghệ Thông Tin}
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Kiểm thử phần mềm - Niên khóa 2025-2026}
+\fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{2}
+\makeatletter
+\newcounter {subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\makeatother
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Matlab,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	numbers=left,
+	stepnumber=1,
+	numbersep=1pt,    
+	firstnumber=1,
+	numberfirstline=true
+}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+TRƯỜNG ĐẠI HỌC SÀI GÒN \\
+KHOA CÔNG NGHỆ THÔNG TIN
+\end{center}
+\vspace{1cm}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{logoITSGU.png}
+\end{center}
+\end{figure}
+
+\vspace{1cm}
+
+
+\begin{center}
+\begin{tabular}{c}
+	\multicolumn{1}{l}{\textbf{{\Large KIỂM THỬ PHẦN MỀM}}}\\
+	~~\\
+	\hline
+	\\
+	\multicolumn{1}{l}{\textbf{{\Large Báo cáo phầm mềm }}}\\
+	\\
+	
+	\textbf{{\Huge Kiểm thử tài khoản \& sản phẩm}}\\
+	\\
+	\hline
+\end{tabular}
+\end{center}
+
+\vspace{3cm}
+
+\begin{table}[h]
+\begin{tabular}{rrl}
+\hspace{5 cm} & GVHD: &Từ Lãng Phiêu\\
+& SV: & Nguyen Thanh Hiền - 3123560024 \\
+% & & SV3 - MSSV \\
+% & & SV4 - MSSV\\
+\end{tabular}
+\end{table}
+
+\vfill
+
+\begin{center}
+{\footnotesize TP. HỒ CHÍ MINH, THÁNG 2/2024}
+\end{center}
+\end{titlepage}
+
+\newpage
+\newpage
+
+\begin{center}
+    \vspace*{5cm} % Add some vertical space
+    \textbf{\Large LỜI CẢM ƠN}
+    \vspace{2cm}
+\end{center}
+\noindent
+Nhóm chúng em xin chân thành gửi lời cảm ơn sâu sắc đến thầy \textbf{Từ Lãng Phiêu}, giảng viên bộ môn Kiểm thử Phần mềm, đã tận tình hướng dẫn, chỉ bảo và cung cấp những kiến thức quý báu trong suốt quá trình học tập và thực hiện bài tập lớn này.
+
+Sự hỗ trợ và những góp ý chuyên môn của thầy đã giúp chúng em định hướng đúng đắn, hoàn thiện dự án và áp dụng hiệu quả các kỹ thuật kiểm thử vào thực tế.
+
+Chúng em cũng xin cảm ơn Khoa Công nghệ thông tin, Trường Đại học Sài Gòn đã tạo điều kiện tốt nhất cho chúng em học tập và nghiên cứu.
+
+Một lần nữa, chúng em xin chân thành cảm ơn!
+
+\vspace*{\fill}
+\begin{flushright}
+    \textit{Nhóm sinh viên thực hiện}
+\end{flushright}
+\newpage
+
+\begin{center}
+    \textbf{\Large NHẬN XÉT CỦA GIẢNG VIÊN}
+    \vspace{2cm}
+\end{center}
+\noindent
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+....................................................................................................................................\\
+\vspace{2cm}
+\begin{flushright}
+    \begin{tabular}{c}
+        \textbf{Chữ ký giảng viên} \\
+        \vspace{3cm} \\
+        \textbf{Từ Lãng Phiêu}
+    \end{tabular}
+\end{flushright}
+\newpage
+
+\begin{center}
+    \textbf{\Large BẢNG ĐÁNH GIÁ TIẾN ĐỘ CHI TIẾT}
+    \vspace{0.5cm}
+\end{center}
+
+\begin{table}[h]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|c|l|l|c|}
+        \hline
+        \textbf{Câu} & \textbf{Mục} & \textbf{Chi tiết yêu cầu} & \textbf{Trạng thái} \\
+        \hline
+        \multirow{4}{*}{1} & \multirow{2}{*}{1.1 Login} & Phân tích yêu cầu, 10 Scenarios, Phân loại & Hoàn thành \\ \cline{3-4}
+                           &                            & Thiết kế 5 Test Cases chi tiết & Hoàn thành \\ \cline{2-4}
+                           & \multirow{2}{*}{1.2 Product} & Phân tích yêu cầu, 10 Scenarios, Phân loại & Hoàn thành \\ \cline{3-4}
+                           &                              & Thiết kế 5 Test Cases chi tiết & Hoàn thành \\ \hline
+        \multirow{4}{*}{2} & \multirow{2}{*}{2.1 Login} & Frontend: Unit tests (Validations) \& Coverage & Hoàn thành \\ \cline{3-4}
+                           &                            & Backend: Unit tests (AuthService) \& Coverage & Hoàn thành \\ \cline{2-4}
+                           & \multirow{2}{*}{2.2 Product} & Frontend: Unit tests (Validations, Form) \& Coverage & Hoàn thành \\ \cline{3-4}
+                           &                              & Backend: Unit tests (ProductService) \& Coverage & Hoàn thành \\ \hline
+        \multirow{4}{*}{3} & \multirow{2}{*}{3.1 Login} & Frontend: Component Integration & Hoàn thành \\ \cline{3-4}
+                           &                            & Backend: API Integration (MockMvc) & Hoàn thành \\ \cline{2-4}
+                           & \multirow{2}{*}{3.2 Product} & Frontend: Component Integration (List, Form) & Hoàn thành \\ \cline{3-4}
+                           &                              & Backend: API Integration (CRUD endpoints) & Hoàn thành \\ \hline
+        \multirow{4}{*}{4} & \multirow{2}{*}{4.1 Login} & Frontend: Mocking (authService) & Hoàn thành \\ \cline{3-4}
+                           &                            & Backend: Mocking (AuthService) & Hoàn thành \\ \cline{2-4}
+                           & \multirow{2}{*}{4.2 Product} & Frontend: Mocking (productService) & Hoàn thành \\ \cline{3-4}
+                           &                              & Backend: Mocking (ProductRepository) & Hoàn thành \\ \hline
+        \multirow{4}{*}{5} & \multirow{2}{*}{5.1 Login} & Setup, E2E Scenarios (Flow, Validation) & Hoàn thành \\ \cline{3-4}
+                           &                            & CI/CD: GitHub Actions workflow & Hoàn thành \\ \cline{2-4}
+                           & \multirow{2}{*}{5.2 Product} & Setup POM, E2E Scenarios (CRUD) & Hoàn thành \\ \cline{3-4}
+                           &                              & CI/CD: Complete Pipeline & Hoàn thành \\ \hline
+        \multirow{4}{*}{Bonus} & \multirow{2}{*}{7.1 Perf.} & Setup JMeter/k6, API Tests & Chưa HT \\ \cline{3-4}
+                               &                            & Analysis \& Recommendations & Chưa HT \\ \cline{2-4}
+                               & \multirow{2}{*}{7.2 Sec.} & Vulnerabilities (SQLi, XSS, CSRF) & Chưa HT \\ \cline{3-4}
+                               &                           & Security Best Practices & Chưa HT \\ \hline
+    \end{tabular}
+\end{table}
+\newpage
+
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Giới thiệu về Dự án}
+
+\subsection{Tổng quan}
+
+Dự án \textbf{FLOGINFE\_BE} là một ứng dụng web hoàn chỉnh bao gồm hệ thống đăng nhập (\textit{Login}) và quản lý sản phẩm (\textit{Product Management}) với kiến trúc microservices tách biệt frontend và backend. 
+
+Các tính năng chính của dự án:
+\begin{itemize}
+    \item \textbf{Hệ thống Đăng nhập:} Xác thực người dùng với JWT tokens, validation dữ liệu đầu vào, xử lý lỗi toàn diện
+    \item \textbf{Quản lý Sản phẩm:} Các thao tác CRUD (Create, Read, Update, Delete) cho sản phẩm
+    \item \textbf{Phát triển theo TDD:} Tuân thủ quy trình Test-Driven Development
+    \item \textbf{Bộ Test Toàn diện:} Bao gồm Unit Testing, Integration Testing, Mock Testing, và E2E Testing
+    \item \textbf{CI/CD Pipeline:} Tích hợp liên tục với Github Actions
+\end{itemize}
+
+\subsection{Công nghệ sử dụng}
+
+\subsubsection{Frontend}
+
+\begin{itemize}
+    \item \textbf{React 19} - Framework JavaScript hiện đại cho xây dựng giao diện người dùng
+    \item \textbf{TypeScript} - Ngôn ngữ lập trình có kiểu dữ liệu tĩnh dựa trên JavaScript
+    \item \textbf{Vite 7.1.7} - Build tool hiệu suất cao, tối ưu hóa phát triển ứng dụng
+    \item \textbf{TailwindCSS 4} - Framework CSS tiện ích-first cho styling
+    \item \textbf{Radix UI} - Thư viện component UI không có styling mặc định, cho phép tùy chỉnh
+    \item \textbf{React Hook Form 7} - Thư viện quản lý form hiệu quả
+    \item \textbf{Zod 4} - Thư viện xác thực schema TypeScript
+    \item \textbf{Axios 1.13} - HTTP client cho gọi API
+    \item \textbf{React Router 7} - Routing cho ứng dụng đơn trang (SPA)
+    \item \textbf{Zustand 5} - State management đơn giản và nhẹ
+    \item \textbf{Vitest 4} - Testing framework tương thích Jest với Vite
+    \item \textbf{React Testing Library 16} - Testing utilities cho React components
+    \item \textbf{Cypress 15.7} - End-to-End testing framework
+\end{itemize}
+
+\subsubsection{Backend}
+
+\begin{itemize}
+    \item \textbf{Spring Boot 3.5.6} - Framework ứng dụng Java dành cho xây dựng ứng dụng độc lập
+    \item \textbf{Java 21} - Ngôn ngữ lập trình Java phiên bản LTS (Long Term Support)
+    \item \textbf{Spring Data JPA} - Abstraction layer cho truy cập dữ liệu thông qua Hibernate
+    \item \textbf{Spring Security 6} - Framework xác thực và phân quyền
+    \item \textbf{JWT (JSON Web Tokens)} - Xác thực không trạng thái (Stateless Authentication)
+    \item \textbf{MySQL} - Hệ quản trị cơ sở dữ liệu quan hệ
+    \item \textbf{Lombok} - Thư viện giảm boilerplate code Java
+    \item \textbf{Maven 3.9} - Build tool và quản lý dependencies
+    \item \textbf{JUnit 5} - Framework testing cho Java
+    \item \textbf{Mockito} - Framework mocking cho unit testing
+    \item \textbf{JaCoCo} - Code coverage analysis tool
+\end{itemize}
+
+\subsection{Cấu trúc dự án}
+
+\begin{mdframed}[backgroundcolor=gray!10, roundcorner=10pt, skipabove=10pt, skipbelow=10pt]
+\small
+\begin{verbatim}
+FLOGINFE_BE/
++-- backend/                      # Spring Boot Application
+    +-- .env                      # Bien moi truong (DB, JWT secret)
+    +-- pom.xml                   # Maven configuration & dependencies
+    +-- mvnw, mvnw.cmd            # Maven wrapper
+    +-- test.sh                   # Script chay test
+    +-- src/
+        +-- main/java/com/flogin/
+            +-- BackendApplication.java
+            +-- configuration/    # Security & JWT config
+            +-- controller/       # REST API Endpoints
+            +-- service/          # Business Logic
+            +-- repository/       # Data Access Layer
+            +-- entity/           # Database Entities
+            +-- dto/              # Data Transfer Objects
+            +-- mapper/           # Entity <-> DTO Mapping
+            +-- exception/        # Exception Handling
+        +-- test/java/com/flogin/
+            +-- unit/             # Unit Tests
+            +-- integration/      # Integration Tests
+            +-- mock/             # Mock Tests
+        +-- resources/
+            +-- application.properties
+    
++-- frontend/                     # React + TypeScript Application
+    +-- .env                      # Frontend environment variables
+    +-- package.json              # Node dependencies
+    +-- vite.config.ts            # Vite configuration
+    +-- tsconfig.json             # TypeScript configuration
+    +-- cypress.config.ts         # Cypress E2E configuration
+    +-- src/
+        +-- main.tsx              # Application entry point
+        +-- App.tsx               # Root component & routing
+        +-- components/           # Reusable Components
+        +-- page/admin/           # Page components
+        +-- services/             # API Service Layer
+        +-- schema/               # Zod Validation Schemas
+        +-- context/              # React Context
+        +-- utils/                # Utility Functions
+        +-- tests/                # Test Files
+            +-- auth.test.ts
+            +-- integration/
+            +-- mock/
+    
++-- cypress/                      # E2E Test Configuration
+    +-- e2e/
+        +-- login.cy.ts
+        +-- product.cy.ts
+    +-- fixtures/
+    +-- support/
+    
++-- docs/                         # Documentation
+    +-- report.tex
+    +-- TEST_CASES_LOGIN.md
+\end{verbatim}
+\end{mdframed}
+
+\subsubsection{Mô tả các thư mục chính}
+
+\begin{itemize}
+    \item \textbf{backend/} - Ứng dụng Spring Boot chịu trách nhiệm xử lý logic kinh doanh, xác thực, quản lý dữ liệu thông qua REST API
+    
+    \item \textbf{frontend/} - Ứng dụng React TypeScript cung cấp giao diện người dùng, gọi API backend, quản lý trạng thái phía client
+    
+    \item \textbf{cypress/} - Thư mục chứa các bài kiểm thử E2E (End-to-End), fixtures dữ liệu test, và support utilities
+    
+    \item \textbf{docs/} - Tài liệu dự án bao gồm báo cáo LaTeX, danh sách test case, và phần mô tả chi tiết
+\end{itemize}
+
+\newpage
+
+\section{Câu 1: Phân tích và Thiết kế Test Cases}
+\subsection{Login - Phân tích và Test Scenarios}
+
+\subsubsection{Yêu cầu}
+\subsubsubsection{Phân tích đầy đủ các yêu cầu chức năng của tính năng Login}
+
+Dựa trên phân tích mã nguồn của ứng dụng (frontend React và backend Spring Boot), chức năng Login được triển khai với các yêu cầu sau:
+
+\begin{itemize}
+    \item \textbf{Validation rules cho username:}
+    \begin{itemize}
+        \item Không được để trống (Required)
+        \item Độ dài tối thiểu: 3 ký tự
+        \item Độ dài tối đa: 50 ký tự
+        \item Chỉ chứa các ký tự: a-z, A-Z, 0-9, dấu gạch ngang (-), dấu chấm (.), dấu gạch dưới (\_)
+        \item Pattern regex: \texttt{\^{}[A-Za-z\textbackslash{}d\textbackslash{}-.\textbackslash{}\_]+\$}
+    \end{itemize}
+
+    \item \textbf{Validation rules cho password:}
+    \begin{itemize}
+        \item Không được để trống (Required)
+        \item Độ dài tối thiểu: 6 ký tự
+        \item Độ dài tối đa: 100 ký tự
+        \item Phải chứa ít nhất một chữ cái (A-Z hoặc a-z)
+        \item Phải chứa ít nhất một số (0-9)
+        \item Pattern regex: \texttt{\^{}(?=.*[A-Za-z])(?=.*\textbackslash{}d)[A-Za-z\textbackslash{}d]+\$}
+    \end{itemize}
+
+    \item \textbf{Authentication flow:}
+    \begin{itemize}
+        \item Client gửi POST request tới endpoint \texttt{/auth/login} với username và password
+        \item Backend kiểm tra username có tồn tại trong database (UserRepository)
+        \item Backend sử dụng PasswordEncoder để so sánh password đã hash
+        \item Nếu xác thực thành công, backend tạo JWT token bằng JwtTokenProvider
+        \item Server trả về LoginResponse gồm: success (boolean), message, token (JWT), và userResponse
+        \item Client lưu JWT token vào LocalStorage
+        \item Client gọi API \texttt{/auth/me} để lấy thông tin user hiện tại
+        \item Client cập nhật AuthContext và chuyển hướng đến trang Dashboard (/home)
+    \end{itemize}
+
+    \item \textbf{Error handling:}
+    \begin{itemize}
+        \item \textit{Validation errors:} Hiển thị lỗi ngay dưới input field khi vi phạm quy tắc validation (frontend)
+        \item \textit{Username không tồn tại:} Backend trả về NotFoundException với message "Tài khoản hoặc mật khẩu không đúng"
+        \item \textit{Password sai:} Backend trả về AuthException với status 401 UNAUTHORIZED và message "Mật khẩu không chính xác"
+        \item \textit{Token không hợp lệ:} Khi gọi \texttt{/auth/me} với token sai, trả về AuthException "Token không hợp lệ"
+        \item \textit{Thiếu Authorization header:} Trả về AuthException "Thiếu header xác thực"
+        \item \textit{Network errors:} Frontend xử lý lỗi fetch và hiển thị message "Đăng nhập thất bại"
+        \item Tất cả lỗi được xử lý bởi GlobalExceptionHandler (backend) và hiển thị user-friendly message (frontend)
+    \end{itemize}
+\end{itemize}
+
+\section{Kết luận}
+
+Qua quá trình thực hiện bài tập lớn môn Kiểm thử Phần mềm với dự án \textbf{FLOGINFE\_BE}, nhóm em đã áp dụng một cách toàn diện các phương pháp kiểm thử hiện đại vào một ứng dụng web thực tế, bao gồm cả frontend (React) và backend (Spring Boot).
+
+\subsection{Kết quả đạt được}
+
+\begin{itemize}
+    \item \textbf{Xây dựng bộ test toàn diện:} Nhóm đã thành công trong việc thiết kế và triển khai các bộ test ở nhiều cấp độ khác nhau:
+    \begin{itemize}
+        \item \textbf{Unit Testing:} Đảm bảo các hàm và logic đơn lẻ hoạt động chính xác, đặc biệt là các hàm validation và business logic trong services.
+        \item \textbf{Integration Testing:} Kiểm tra sự tương tác giữa các component (frontend) và giữa các lớp controller-service (backend), đảm bảo các thành phần hoạt động trơn tru khi kết hợp với nhau.
+        \item \textbf{Mock Testing:} Sử dụng mock objects để cô lập các thành phần cần test khỏi các dependency bên ngoài (API services, repositories), giúp việc kiểm thử trở nên nhanh chóng, ổn định và tập trung.
+        \item \textbf{E2E Testing:} Sử dụng Cypress để tự động hóa các kịch bản từ góc nhìn người dùng, kiểm tra toàn bộ luồng chức năng từ giao diện đến cơ sở dữ liệu, đảm bảo trải nghiệm người dùng cuối cùng đúng như mong đợi.
+    \end{itemize}
+    \item \textbf{Áp dụng TDD:} Quy trình phát triển được tuân thủ theo phương pháp Test-Driven Development, giúp thiết kế code rõ ràng, dễ bảo trì và giảm thiểu lỗi ngay từ đầu.
+    \item \textbf{Đạt độ bao phủ cao:} Các module chính của cả frontend và backend đều đạt được độ bao phủ code (code coverage) cao, vượt qua các yêu cầu đặt ra trong đề bài, cho thấy mức độ kiểm thử sâu rộng của dự án.
+    \item \textbf{Sử dụng thành thạo công cụ:} Nhóm đã làm quen và sử dụng hiệu quả các công cụ và thư viện kiểm thử hàng đầu như \textbf{Vitest}, \textbf{React Testing Library}, \textbf{JUnit 5}, \textbf{Mockito}, và \textbf{Cypress}.
+\end{itemize}
+
+\subsection{Bài học kinh nghiệm}
+
+Dự án này không chỉ giúp nhóm em củng cố kiến thức lý thuyết về kiểm thử phần mềm mà còn mang lại nhiều kinh nghiệm thực tiễn quý báu. Nhóm đã học được cách tầm quan trọng của việc xây dựng một chiến lược kiểm thử đa tầng, từ đó đảm bảo chất lượng sản phẩm ở mọi giai đoạn phát triển. Việc viết test trước khi viết code (TDD) đã chứng minh hiệu quả trong việc cải thiện thiết kế và chất lượng phần mềm.
+
+Nhìn chung, dự án đã hoàn thành tốt các mục tiêu đề ra, và sản phẩm cuối cùng là một ứng dụng ổn định, đáng tin cậy với một bộ test tự động hóa mạnh mẽ, sẵn sàng cho việc bảo trì và phát triển trong tương lai.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{80}
+
+\bibitem{CVX}
+CVX Introduction
+``\textbf{link: http://cvxr.com/cvx/doc/intro.html/}'',
+\textit{What is CVX}, lần truy cập cuối: 15/04/2017.
+
+\bibitem{AAB}
+CVX Introduction2
+``\textbf{link: http://cvxr.com/cvx/doc/intro.html/}'',
+\textit{What is CVX}, lần truy cập cuối: 15/04/2017.
+
+\end{thebibliography}
+\end{document}

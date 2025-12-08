@@ -1,0 +1,136 @@
+@startuml user-create
+title Sequence Diagram: Tạo tài khoản mới
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":AccountPage"
+participant dialog as ":AccountAdd"
+participant userService as ":UserService"
+participant controller as ":UserController"
+participant service as ":UserService"
+participant mapper as ":UserMapper"
+participant repo as ":UserRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên thực hiện
+    tạo tài khoản mới
+    trong hệ thống
+end note
+
+admin -> ui : Ấn nút "Tạo tài khoản"
+activate ui
+
+ui -> dialog : setAddDialogOpen(true)
+activate dialog
+
+dialog --> admin : Hiển thị form tạo tài khoản
+
+admin -> dialog : Nhập thông tin (username, mail, password)
+
+dialog -> dialog : validateField(name: keyof UserRequest, value: String)
+note left
+    Kiểm tra:
+    - username: 3-50 ký tự
+    - mail: định dạng email hợp lệ
+    - password: 6-100 ký tự
+end note
+
+alt Validation Flow: Dữ liệu không hợp lệ
+    dialog --> admin : Hiển thị lỗi validation
+else Basic Flow: Dữ liệu hợp lệ
+    admin -> dialog : Ấn nút "Tạo tài khoản"
+    
+    dialog -> dialog : validateForm()
+    
+    dialog -> userService : create(user: UserRequest)
+    activate userService
+    
+    userService -> controller : POST /users (UserRequest, Authorization: Bearer token)
+    activate controller
+    
+    controller -> mapper : toEntity(res: UserRequest)
+    activate mapper
+    mapper --> controller : UserEntity
+    deactivate mapper
+    
+    controller -> service : create(user: UserEntity)
+    activate service
+    
+    service -> repo : existsByUsername(username: String)
+    activate repo
+    
+    repo -> db : SELECT COUNT(*) FROM users WHERE username = ?
+    activate db
+    db --> repo : count
+    deactivate db
+    
+    repo --> service : Boolean
+    deactivate repo
+    
+    alt ExistsException Flow: Username đã tồn tại
+        service --> controller : throw ExistsException("Username đã tồn tại")
+        controller --> userService : 409 Conflict
+        userService --> dialog : Error: "Username đã tồn tại"
+        dialog --> admin : Hiển thị lỗi
+    else Basic Flow: Username chưa tồn tại
+        service -> repo : existsByMail(email: String)
+        activate repo
+        
+        repo -> db : SELECT COUNT(*) FROM users WHERE mail = ?
+        activate db
+        db --> repo : count
+        deactivate db
+        
+        repo --> service : Boolean
+        deactivate repo
+        
+        alt ExistsException Flow: Email đã được sử dụng
+            service --> controller : throw ExistsException("Email đã được sử dụng")
+            controller --> userService : 409 Conflict
+            userService --> dialog : Error: "Email đã được sử dụng"
+            dialog --> admin : Hiển thị lỗi
+        else Basic Flow: Email chưa tồn tại
+            service -> service : passwordEncoder.encode(password: String)
+            
+            service -> repo : save(user: UserEntity)
+            activate repo
+            
+            repo -> db : INSERT INTO users (username, password, mail) VALUES (?, ?, ?)
+            activate db
+            db --> repo : UserEntity
+            deactivate db
+            
+            repo --> service : UserEntity
+            deactivate repo
+            
+            service --> controller : UserEntity
+            deactivate service
+            
+            controller -> mapper : toResponse(user: UserEntity)
+            activate mapper
+            mapper --> controller : UserResponse
+            deactivate mapper
+            
+            controller --> userService : 201 Created (UserResponse)
+            deactivate controller
+            
+            userService --> dialog : UserResponse
+            deactivate userService
+            
+            dialog -> ui : onUserAdded()
+            ui -> ui : fetchUsers()
+            dialog -> dialog : setFormData({ username: "", password: "", mail: "" })
+            dialog -> dialog : onOpenChange(false)
+            
+            dialog --> admin : Đóng dialog, cập nhật danh sách
+        end
+    end
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

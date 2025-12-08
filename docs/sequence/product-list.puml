@@ -1,0 +1,62 @@
+@startuml product-list
+title Sequence Diagram: Xem danh sách sản phẩm
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":ProductPage"
+participant productService as ":ProductService"
+participant controller as ":ProductController"
+participant service as ":ProductService"
+participant repo as ":ProductRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên truy cập
+    trang quản lý sản phẩm
+    để xem danh sách
+end note
+
+admin -> ui : Truy cập trang Quản lý sản phẩm
+activate ui
+
+ui -> ui : useEffect() -> fetchProducts()
+
+ui -> productService : getAll(category?: Category)
+activate productService
+
+productService -> controller : GET /products (Authorization: Bearer token)
+activate controller
+
+controller -> service : getAll()
+activate service
+
+service -> repo : findAll()
+activate repo
+
+repo -> db : SELECT * FROM products
+activate db
+db --> repo : ResultSet
+deactivate db
+
+repo --> service : List<ProductEntity>
+deactivate repo
+
+service --> controller : List<ProductEntity>
+deactivate service
+
+controller -> controller : products.map(ProductMapper::toResponse)
+
+controller --> productService : 200 OK (List<ProductResponse>)
+deactivate controller
+
+productService --> ui : ProductResponse[]
+deactivate productService
+
+ui -> ui : setData(products: ProductResponse[])
+ui -> ui : setLoading(false)
+
+ui --> admin : Hiển thị danh sách sản phẩm trong DataTable
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml product-view
+title Sequence Diagram: Xem chi tiết sản phẩm
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":ProductPage"
+participant dialog as ":ProductView"
+
+note left of admin
+    Quản trị viên xem
+    chi tiết thông tin
+    một sản phẩm
+end note
+
+admin -> ui : Ấn nút "Xem" trên sản phẩm
+activate ui
+
+ui -> ui : setSelectedProduct(product: ProductResponse)
+ui -> dialog : setViewDialogOpen(true)
+activate dialog
+
+dialog -> dialog : formatPrice(price: number)
+note left
+    Định dạng giá tiền
+    theo chuẩn VND
+end note
+
+dialog --> admin : Hiển thị chi tiết sản phẩm (ID, Tên, Giá, Số lượng, Danh mục, Mô tả)
+
+alt Basic Flow: Đóng dialog
+    admin -> dialog : Ấn nút "Đóng"
+    dialog -> dialog : onOpenChange(false)
+    dialog --> admin : Đóng dialog
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

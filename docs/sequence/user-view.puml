@@ -1,0 +1,35 @@
+@startuml user-view
+title Sequence Diagram: Xem chi tiết tài khoản
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":AccountPage"
+participant dialog as ":AccountView"
+
+note left of admin
+    Quản trị viên xem
+    chi tiết thông tin
+    một tài khoản
+end note
+
+admin -> ui : Ấn nút "Xem" trên tài khoản
+activate ui
+
+ui -> ui : setSelectedUser(user: UserResponse)
+ui -> dialog : setViewDialogOpen(true)
+activate dialog
+
+dialog --> admin : Hiển thị chi tiết tài khoản (ID, Tên đăng nhập, Email)
+
+alt Basic Flow: Đóng dialog
+    admin -> dialog : Ấn nút "Đóng"
+    dialog -> dialog : onOpenChange(false)
+    dialog --> admin : Đóng dialog
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

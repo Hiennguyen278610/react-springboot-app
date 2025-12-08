@@ -1,0 +1,116 @@
+@startuml product-create
+title Sequence Diagram: Tạo sản phẩm mới
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":ProductPage"
+participant dialog as ":ProductAdd"
+participant productService as ":ProductService"
+participant controller as ":ProductController"
+participant service as ":ProductService"
+participant mapper as ":ProductMapper"
+participant repo as ":ProductRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên thực hiện
+    thêm sản phẩm mới
+    vào hệ thống
+end note
+
+admin -> ui : Ấn nút "Thêm sản phẩm"
+activate ui
+
+ui -> dialog : setAddDialogOpen(true)
+activate dialog
+
+dialog --> admin : Hiển thị form thêm sản phẩm
+
+admin -> dialog : Nhập thông tin sản phẩm (name, price, quantity, description, category)
+
+dialog -> dialog : validate(productRequest: ProductRequest)
+note left
+    Kiểm tra:
+    - name: 1-100 ký tự
+    - price: >= 0
+    - quantity: >= 0
+    - description: <= 500 ký tự
+    - category: hợp lệ
+end note
+
+alt Validation Flow: Dữ liệu không hợp lệ
+    dialog --> admin : Hiển thị lỗi validation
+else Basic Flow: Dữ liệu hợp lệ
+    admin -> dialog : Ấn nút "Tạo sản phẩm"
+    
+    dialog -> productService : create(product: ProductRequest)
+    activate productService
+    
+    productService -> controller : POST /products (ProductRequest, Authorization: Bearer token)
+    activate controller
+    
+    controller -> service : create(req: ProductRequest)
+    activate service
+    
+    service -> repo : existsByName(name: String)
+    activate repo
+    
+    repo -> db : SELECT COUNT(*) FROM products WHERE name = ?
+    activate db
+    db --> repo : count
+    deactivate db
+    
+    repo --> service : Boolean
+    deactivate repo
+    
+    alt ExistsException Flow: Tên sản phẩm đã tồn tại
+        service --> controller : throw ExistsException("Tên sản phẩm đã tồn tại")
+        controller --> productService : 409 Conflict
+        productService --> dialog : Error: "Tên sản phẩm đã tồn tại"
+        dialog --> admin : Hiển thị lỗi
+    else Basic Flow: Tên sản phẩm chưa tồn tại
+        service -> mapper : toEntity(req: ProductRequest)
+        activate mapper
+        mapper --> service : ProductEntity
+        deactivate mapper
+        
+        service -> repo : save(entity: ProductEntity)
+        activate repo
+        
+        repo -> db : INSERT INTO products (name, price, quantity, description, category) VALUES (?, ?, ?, ?, ?)
+        activate db
+        db --> repo : ProductEntity
+        deactivate db
+        
+        repo --> service : ProductEntity
+        deactivate repo
+        
+        service --> controller : ProductEntity
+        deactivate service
+        
+        controller -> mapper : toResponse(entity: ProductEntity)
+        activate mapper
+        mapper --> controller : ProductResponse
+        deactivate mapper
+        
+        controller --> productService : 201 Created (ProductResponse)
+        deactivate controller
+        
+        productService --> dialog : ProductResponse
+        deactivate productService
+        
+        dialog -> dialog : reset()
+        dialog -> ui : onProductAdded()
+        ui -> ui : fetchProducts()
+        dialog -> dialog : onOpenChange(false)
+        
+        dialog --> admin : Đóng dialog, cập nhật danh sách
+    end
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

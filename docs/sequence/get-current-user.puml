@@ -1,0 +1,116 @@
+@startuml get-current-user
+title Sequence Diagram: Lấy thông tin người dùng hiện tại
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":App"
+participant authContext as ":AuthContext"
+participant authService as ":AuthService"
+participant controller as ":LoginController"
+participant service as ":AuthService"
+participant jwtProvider as ":JwtTokenProvider"
+participant repo as ":UserRepository"
+participant db as ":Database"
+
+note left of admin
+    Hệ thống tự động kiểm tra
+    và lấy thông tin người dùng
+    khi tải trang
+end note
+
+admin -> ui : Truy cập ứng dụng
+activate ui
+
+ui -> authContext : refreshUser()
+activate authContext
+
+authContext -> authService : getCurrentUser()
+activate authService
+
+authService -> authService : token = localStorage.getItem('token')
+
+alt AuthException Flow: Token không tồn tại
+    authService --> authContext : throw Error("Token không tồn tại hoặc không hợp lệ")
+    authContext -> authContext : setCurrentUser(null)
+    authContext --> ui : null
+    ui --> admin : Chuyển hướng đến trang đăng nhập
+else Basic Flow: Token tồn tại
+    authService -> controller : GET /auth/me (Authorization: Bearer token)
+    activate controller
+    
+    controller -> service : getCurrentUser(authorizationHeader: String)
+    activate service
+    
+    alt AuthException Flow: Thiếu header xác thực
+        service --> controller : throw AuthException("Thiếu header xác thực", UNAUTHORIZED)
+        controller --> authService : 401 Unauthorized
+        authService --> authContext : Error
+        authContext -> authContext : setCurrentUser(null)
+        authContext --> ui : null
+        ui --> admin : Chuyển hướng đến trang đăng nhập
+    else Basic Flow: Header hợp lệ
+        service -> service : token = authorizationHeader.substring(7)
+        
+        service -> jwtProvider : validateToken(token: String)
+        activate jwtProvider
+        jwtProvider --> service : Boolean
+        deactivate jwtProvider
+        
+        alt AuthException Flow: Token không hợp lệ
+            service --> controller : throw AuthException("Token không hợp lệ", UNAUTHORIZED)
+            controller --> authService : 401 Unauthorized
+            authService --> authContext : Error
+            authContext -> authContext : setCurrentUser(null)
+            authContext --> ui : null
+            ui --> admin : Chuyển hướng đến trang đăng nhập
+        else Basic Flow: Token hợp lệ
+            service -> jwtProvider : getUsernameFromToken(token: String)
+            activate jwtProvider
+            jwtProvider --> service : username: String
+            deactivate jwtProvider
+            
+            service -> repo : findByUsername(username: String)
+            activate repo
+            
+            repo -> db : SELECT * FROM users WHERE username = ?
+            activate db
+            db --> repo : ResultSet
+            deactivate db
+            
+            repo --> service : Optional<UserEntity>
+            deactivate repo
+            
+            alt AuthException Flow: Không tìm thấy người dùng
+                service --> controller : throw AuthException("Không tìm thấy người dùng", NOT_FOUND)
+                controller --> authService : 404 Not Found
+                authService --> authContext : Error
+                authContext -> authContext : setCurrentUser(null)
+                authContext --> ui : null
+                ui --> admin : Chuyển hướng đến trang đăng nhập
+            else Basic Flow: Người dùng tồn tại
+                service -> service : UserMapper.toResponse(user: UserEntity)
+                
+                service --> controller : UserResponse
+                deactivate service
+                
+                controller --> authService : 200 OK (UserResponse)
+                deactivate controller
+                
+                authService --> authContext : UserResponse
+                deactivate authService
+                
+                authContext -> authContext : setCurrentUser(user: UserResponse)
+                authContext --> ui : UserResponse
+                deactivate authContext
+                
+                ui --> admin : Hiển thị Dashboard với thông tin người dùng
+            end
+        end
+    end
+end
+
+deactivate ui
+
+@enduml

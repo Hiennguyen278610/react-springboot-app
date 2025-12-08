@@ -1,0 +1,112 @@
+@startuml user-delete
+title Sequence Diagram: Xóa tài khoản
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":AccountPage"
+participant dialog as ":AccountDelete"
+participant userService as ":UserService"
+participant controller as ":UserController"
+participant service as ":UserService"
+participant repo as ":UserRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên thực hiện
+    xóa tài khoản khỏi
+    hệ thống
+end note
+
+admin -> ui : Ấn nút "Xóa" trên tài khoản
+activate ui
+
+ui -> ui : setSelectedUser(user: UserResponse)
+ui -> dialog : setDeleteDialogOpen(true)
+activate dialog
+
+dialog -> dialog : isSelfDelete = (currentUser.id === user.id)
+note left
+    Kiểm tra xem có đang
+    xóa chính tài khoản
+    đang đăng nhập không
+end note
+
+alt Alternative Flow: Đang xóa chính mình
+    dialog --> admin : Hiển thị cảnh báo "Bạn không thể xóa tài khoản đang được đăng nhập"
+    
+    admin -> dialog : Ấn nút "Hủy"
+    dialog -> dialog : onOpenChange(false)
+    dialog --> admin : Đóng dialog
+else Basic Flow: Xóa tài khoản khác
+    dialog --> admin : Hiển thị dialog xác nhận xóa
+    
+    alt Basic Flow: Xác nhận xóa
+        admin -> dialog : Ấn nút "Xóa tài khoản"
+        
+        dialog -> userService : delete(id: number)
+        activate userService
+        
+        userService -> controller : DELETE /users/{id} (Authorization: Bearer token)
+        activate controller
+        
+        controller -> service : delete(id: Long)
+        activate service
+        
+        service -> service : getById(id: Long)
+        service -> repo : findById(id: Long)
+        activate repo
+        
+        repo -> db : SELECT * FROM users WHERE id = ?
+        activate db
+        db --> repo : ResultSet
+        deactivate db
+        
+        repo --> service : Optional<UserEntity>
+        deactivate repo
+        
+        alt NotFoundException Flow: Tài khoản không tồn tại
+            service --> controller : throw NotFoundException("Tài khoản không tồn tại")
+            controller --> userService : 404 Not Found
+            userService --> dialog : Error: "Tài khoản không tồn tại"
+            dialog --> admin : Hiển thị lỗi
+        else Basic Flow: Tài khoản tồn tại
+            service -> repo : delete(entity: UserEntity)
+            activate repo
+            
+            repo -> db : DELETE FROM users WHERE id = ?
+            activate db
+            db --> repo : void
+            deactivate db
+            
+            repo --> service : void
+            deactivate repo
+            
+            service --> controller : void
+            deactivate service
+            
+            controller --> userService : 204 No Content
+            deactivate controller
+            
+            userService --> dialog : void
+            deactivate userService
+            
+            dialog -> ui : onUserDeleted()
+            ui -> ui : fetchUsers()
+            ui -> ui : setSelectedUser(null)
+            dialog -> dialog : onOpenChange(false)
+            
+            dialog --> admin : Đóng dialog, cập nhật danh sách
+        end
+    else Alternative Flow: Hủy xóa
+        admin -> dialog : Ấn nút "Hủy"
+        dialog -> dialog : onOpenChange(false)
+        dialog --> admin : Đóng dialog
+    end
+end
+
+deactivate dialog
+deactivate ui
+
+@enduml

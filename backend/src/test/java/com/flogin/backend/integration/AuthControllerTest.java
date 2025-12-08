@@ -152,7 +152,7 @@ public class AuthControllerTest {
         ResultActions action = mockMvc.perform(get("/auth/me")
                 .header("Authorization", "Bearer " + token)
                 .header("Origin", origin));
-        
+
         // Assert
         action.andExpect(status().isOk())
                 .andExpect(header().string("Access-Control-Allow-Origin", origin))

@@ -21,7 +21,6 @@ build/
 target/
 
 # Documentation
-docs/
 *.log
 
 .github

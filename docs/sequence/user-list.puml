@@ -1,0 +1,63 @@
+@startuml user-list
+title Sequence Diagram: Xem danh sách tài khoản
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":AccountPage"
+participant userService as ":UserService"
+participant controller as ":UserController"
+participant service as ":UserService"
+participant mapper as ":UserMapper"
+participant repo as ":UserRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên truy cập
+    trang quản lý tài khoản
+    để xem danh sách
+end note
+
+admin -> ui : Truy cập trang Quản lý tài khoản
+activate ui
+
+ui -> ui : useEffect() -> fetchUsers()
+
+ui -> userService : getAll()
+activate userService
+
+userService -> controller : GET /users (Authorization: Bearer token)
+activate controller
+
+controller -> service : getAll()
+activate service
+
+service -> repo : findAll()
+activate repo
+
+repo -> db : SELECT * FROM users
+activate db
+db --> repo : ResultSet
+deactivate db
+
+repo --> service : List<UserEntity>
+deactivate repo
+
+service --> controller : List<UserEntity>
+deactivate service
+
+controller -> controller : users.map(UserMapper::toResponse)
+
+controller --> userService : 200 OK (List<UserResponse>)
+deactivate controller
+
+userService --> ui : UserResponse[]
+deactivate userService
+
+ui -> ui : setData(users: UserResponse[])
+ui -> ui : setLoading(false)
+
+ui --> admin : Hiển thị danh sách tài khoản trong DataTable
+
+@enduml

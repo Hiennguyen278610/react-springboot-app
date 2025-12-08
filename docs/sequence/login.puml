@@ -1,0 +1,90 @@
+@startuml login
+title Sequence Diagram: Đăng nhập hệ thống
+
+autonumber
+
+actor "Quản trị viên" as admin
+
+participant ui as ":LoginPage"
+participant authService as ":AuthService"
+participant controller as ":LoginController"
+participant service as ":AuthService"
+participant repo as ":UserRepository"
+participant db as ":Database"
+
+note left of admin
+    Quản trị viên truy cập 
+    trang đăng nhập để 
+    xác thực vào hệ thống
+end note
+
+admin -> ui : Nhập username và password
+activate ui
+
+ui -> ui : validate(loginRequest: LoginRequest)
+note left
+    Kiểm tra:
+    - username không trống
+    - password không trống
+end note
+
+alt Validation Flow: Dữ liệu không hợp lệ
+    ui --> admin : Hiển thị lỗi validation
+else Basic Flow: Dữ liệu hợp lệ
+    admin -> ui : Ấn nút "Đăng nhập"
+    
+    ui -> authService : login(credentials: LoginRequest)
+    activate authService
+    
+    authService -> controller : POST /auth/login (LoginRequest)
+    activate controller
+    
+    controller -> service : authenticate(loginRequest: LoginRequest)
+    activate service
+    
+    service -> repo : findByUsername(username: String)
+    activate repo
+    
+    repo -> db : SELECT * FROM users WHERE username = ?
+    activate db
+    db --> repo : ResultSet
+    deactivate db
+    
+    repo --> service : Optional<UserEntity>
+    deactivate repo
+    
+    alt Exception Flow: Tài khoản không tồn tại
+        service --> controller : throw NotFoundException("Tài khoản hoặc mật khẩu không đúng")
+        controller --> authService : 404 Not Found
+        authService --> ui : Error: "Tài khoản hoặc mật khẩu không đúng"
+        ui --> admin : Hiển thị lỗi đăng nhập
+    else Basic Flow: Tài khoản tồn tại
+        service -> service : passwordEncoder.matches(password: String, hashedPassword: String)
+        
+        alt AuthException Flow: Mật khẩu không chính xác
+            service --> controller : throw AuthException("Mật khẩu không chính xác", UNAUTHORIZED)
+            controller --> authService : 401 Unauthorized
+            authService --> ui : Error: "Mật khẩu không chính xác"
+            ui --> admin : Hiển thị lỗi đăng nhập
+        else Basic Flow: Mật khẩu chính xác
+            service -> service : jwtTokenProvider.generateToken(username: String)
+            service --> controller : LoginResponse(success: Boolean, message: String, token: String, user: UserResponse)
+            deactivate service
+            
+            controller --> authService : 200 OK (LoginResponse)
+            deactivate controller
+            
+            authService --> ui : LoginResponse
+            deactivate authService
+            
+            ui -> ui : localStorage.setItem("token", token: String)
+            ui -> ui : refreshUser()
+            ui -> ui : navigate("/home")
+            ui --> admin : Chuyển hướng đến Dashboard
+        end
+    end
+end
+
+deactivate ui
+
+@enduml
