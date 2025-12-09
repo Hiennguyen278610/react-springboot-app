@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1765264157508" clover="3.2.0">
+  <project timestamp="1765264157508" name="All files">
+    <metrics statements="12" coveredstatements="1" conditionals="12" coveredconditionals="0" methods="3" coveredmethods="0" elements="27" coveredelements="1" complexity="0" loc="12" ncloc="12" packages="1" files="1" classes="1"/>
+    <file name="base.service.ts" path="/home/hyannguyen0610/workspace/school/software-testing/FLOGINFE_BE/frontend/src/services/base.service.ts">
+      <metrics statements="12" coveredstatements="1" conditionals="12" coveredconditionals="0" methods="3" coveredmethods="0"/>
+      <line num="2" count="2" type="stmt"/>
+      <line num="5" count="0" type="stmt"/>
+      <line num="6" count="0" type="stmt"/>
+      <line num="13" count="0" type="stmt"/>
+      <line num="14" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="17" count="0" type="stmt"/>
+      <line num="18" count="0" type="stmt"/>
+      <line num="20" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="21" count="0" type="stmt"/>
+      <line num="25" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="26" count="0" type="stmt"/>
+      <line num="27" count="0" type="stmt"/>
+    </file>
+  </project>
+</coverage>

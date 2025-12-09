@@ -1,0 +1,62 @@
+@startuml TC_PRODUCT_006
+title Sequence Diagram Test: TC_PRODUCT_006 - Lấy sản phẩm theo danh mục thành công
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+
+note left of tester
+    Unit Test: Kiểm tra lấy danh sách
+    sản phẩm theo danh mục thành công
+end note
+
+== Arrange ==
+
+tester -> testClass : testGetByCategorySuccess()
+activate testClass
+
+note left of testClass
+    Fake data: 
+    - fakeProduct1: Category.DIEN_TU
+    - fakeProduct2: Category.THOI_TRANG
+end note
+
+== Action ==
+
+testClass -> productService : getByCategory(Category.DIEN_TU)
+activate productService
+
+productService -> fakeProductRepo : findByCategory(Category.DIEN_TU)
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: lọc fakeProducts 
+    theo category == DIEN_TU
+    → chỉ có 1 sản phẩm (iPhone 15)
+end note
+
+fakeProductRepo --> productService : List<ProductEntity> (size = 1)
+deactivate fakeProductRepo
+
+productService --> testClass : List<ProductEntity>
+deactivate productService
+
+== Assert ==
+
+testClass -> testClass : assertNotNull(result)
+testClass -> testClass : assertEquals(1, result.size())
+testClass -> testClass : assertEquals("Điện thoại iPhone 15", result.get(0).getName())
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

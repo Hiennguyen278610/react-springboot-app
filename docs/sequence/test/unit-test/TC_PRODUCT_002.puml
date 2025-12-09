@@ -1,0 +1,61 @@
+@startuml TC_PRODUCT_002
+title Sequence Diagram Test: TC_PRODUCT_002 - Tạo sản phẩm thất bại khi tên đã tồn tại
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+
+note left of tester
+    Unit Test: Kiểm tra tạo sản phẩm
+    thất bại khi tên sản phẩm
+    đã tồn tại trong hệ thống
+end note
+
+== Arrange ==
+
+tester -> testClass : testCreateFailNameExists()
+activate testClass
+
+testClass -> testClass : request = new ProductRequest(\n    "Điện thoại iPhone 15",\n    26000000,\n    50,\n    "Điện thoại mới",\n    Category.DIEN_TU\n)
+
+== Action ==
+
+testClass -> testClass : assertThrows(ExistsException.class, () -> {...})
+activate testClass
+
+testClass -> productService : create(request: ProductRequest)
+activate productService
+
+productService -> fakeProductRepo : existsByName("Điện thoại iPhone 15")
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake data: "Điện thoại iPhone 15" đã tồn tại
+    trong fakeProducts list
+end note
+
+fakeProductRepo --> productService : true
+deactivate fakeProductRepo
+
+productService --> testClass : throw ExistsException("Tên sản phẩm đã tồn tại")
+deactivate productService
+
+deactivate testClass
+
+== Assert ==
+
+testClass -> testClass : assertEquals("Tên sản phẩm đã tồn tại", exception.getMessage())
+
+alt Basic Flow: ExistsException được ném và message đúng
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Không có exception hoặc message sai
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

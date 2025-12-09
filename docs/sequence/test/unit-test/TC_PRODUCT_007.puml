@@ -1,0 +1,66 @@
+@startuml TC_PRODUCT_007
+title Sequence Diagram Test: TC_PRODUCT_007 - Xóa sản phẩm thành công
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+
+note left of tester
+    Unit Test: Kiểm tra xóa sản phẩm
+    thành công với ID hợp lệ
+end note
+
+== Arrange ==
+
+tester -> testClass : testDeleteSuccess()
+activate testClass
+
+testClass -> testClass : initialSize = fakeProducts.size()
+note left
+    Lưu kích thước ban đầu để
+    so sánh sau khi xóa (size = 2)
+end note
+
+== Action ==
+
+testClass -> productService : delete(1L)
+activate productService
+
+productService -> productService : getById(1L)
+productService -> fakeProductRepo : findById(1L)
+activate fakeProductRepo
+fakeProductRepo --> productService : Optional.of(fakeProduct1)
+deactivate fakeProductRepo
+
+productService -> fakeProductRepo : delete(entity: ProductEntity)
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: xóa product có id = 1
+    khỏi fakeProducts list
+end note
+
+fakeProductRepo --> productService : void
+deactivate fakeProductRepo
+
+productService --> testClass : void
+deactivate productService
+
+== Assert ==
+
+testClass -> testClass : assertEquals(initialSize - 1, fakeProducts.size())
+testClass -> testClass : assertFalse(fakeProducts.stream().anyMatch(p -> p.getId().equals(1L)))
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

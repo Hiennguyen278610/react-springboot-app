@@ -1,0 +1,64 @@
+@startuml TC_PRODUCT_008
+title Sequence Diagram Test: TC_PRODUCT_008 - Xóa sản phẩm thất bại khi ID không tồn tại
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+
+note left of tester
+    Unit Test: Kiểm tra xóa sản phẩm
+    thất bại khi ID không tồn tại
+end note
+
+== Arrange ==
+
+tester -> testClass : testDeleteNotFound()
+activate testClass
+
+note left of testClass
+    ID 999L không tồn tại trong
+    fake data (chỉ có id 1L và 2L)
+end note
+
+== Action ==
+
+testClass -> testClass : assertThrows(NotFoundException.class, () -> {...})
+activate testClass
+
+testClass -> productService : delete(999L)
+activate productService
+
+productService -> productService : getById(999L)
+productService -> fakeProductRepo : findById(999L)
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: không tìm thấy product
+    với id = 999 trong fakeProducts list
+end note
+
+fakeProductRepo --> productService : Optional.empty()
+deactivate fakeProductRepo
+
+productService --> testClass : throw NotFoundException("Sản phẩm không tồn tại")
+deactivate productService
+
+deactivate testClass
+
+== Assert ==
+
+testClass -> testClass : assertEquals("Sản phẩm không tồn tại", exception.getMessage())
+
+alt Basic Flow: NotFoundException được ném và message đúng
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Không có exception hoặc message sai
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

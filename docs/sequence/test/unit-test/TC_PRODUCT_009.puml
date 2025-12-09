@@ -1,0 +1,84 @@
+@startuml TC_PRODUCT_009
+title Sequence Diagram Test: TC_PRODUCT_009 - Cập nhật sản phẩm thành công
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+participant mapper as ":ProductMapper"
+
+note left of tester
+    Unit Test: Kiểm tra cập nhật
+    sản phẩm thành công với
+    dữ liệu hợp lệ
+end note
+
+== Arrange ==
+
+tester -> testClass : testUpdateSuccess()
+activate testClass
+
+testClass -> testClass : request = new ProductRequest(\n    "Điện thoại iPhone 15 Pro Max",\n    30000000,\n    80,\n    "Phiên bản nâng cấp",\n    Category.DIEN_TU\n)
+
+== Action ==
+
+testClass -> productService : update(1L, request: ProductRequest)
+activate productService
+
+productService -> productService : getById(1L)
+productService -> fakeProductRepo : findById(1L)
+activate fakeProductRepo
+fakeProductRepo --> productService : Optional.of(fakeProduct1)
+deactivate fakeProductRepo
+
+productService -> fakeProductRepo : existsByName("Điện thoại iPhone 15 Pro Max")
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: tên mới khác tên cũ
+    và tên mới chưa tồn tại → OK
+end note
+
+fakeProductRepo --> productService : false
+deactivate fakeProductRepo
+
+productService -> mapper : updateEntity(entity: ProductEntity, req: ProductRequest)
+activate mapper
+
+note left of mapper
+    Cập nhật các field:
+    name, price, quantity,
+    description, category
+end note
+
+mapper --> productService : void
+deactivate mapper
+
+productService -> fakeProductRepo : save(entity: ProductEntity)
+activate fakeProductRepo
+fakeProductRepo --> productService : ProductEntity (updated)
+deactivate fakeProductRepo
+
+productService --> testClass : ProductEntity
+deactivate productService
+
+== Assert ==
+
+testClass -> testClass : assertNotNull(result)
+testClass -> testClass : assertEquals(1L, result.getId())
+testClass -> testClass : assertEquals("Điện thoại iPhone 15 Pro Max", result.getName())
+testClass -> testClass : assertEquals(new BigDecimal("30000000"), result.getPrice())
+testClass -> testClass : assertEquals(80, result.getQuantity())
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

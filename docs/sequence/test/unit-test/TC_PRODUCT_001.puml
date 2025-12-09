@@ -1,0 +1,79 @@
+@startuml TC_PRODUCT_001
+title Sequence Diagram Test: TC_PRODUCT_001 - Tạo sản phẩm thành công với dữ liệu hợp lệ
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+participant mapper as ":ProductMapper"
+
+note left of tester
+    Unit Test: Kiểm tra tạo sản phẩm
+    thành công với thông tin hợp lệ
+    và tên chưa tồn tại
+end note
+
+== Arrange ==
+
+tester -> testClass : testCreateSuccess()
+activate testClass
+
+testClass -> testClass : request = new ProductRequest(\n    "Laptop Dell XPS 15",\n    35000000,\n    50,\n    "Laptop cao cấp Dell XPS 15",\n    Category.DIEN_TU\n)
+
+== Action ==
+
+testClass -> productService : create(request: ProductRequest)
+activate productService
+
+productService -> fakeProductRepo : existsByName("Laptop Dell XPS 15")
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake data: chỉ có "Điện thoại iPhone 15"
+    và "Áo thun nam"
+    → "Laptop Dell XPS 15" chưa tồn tại
+end note
+
+fakeProductRepo --> productService : false
+deactivate fakeProductRepo
+
+productService -> mapper : toEntity(request: ProductRequest)
+activate mapper
+mapper --> productService : ProductEntity
+deactivate mapper
+
+productService -> fakeProductRepo : save(entity: ProductEntity)
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: gán id = nextId++
+    thêm entity vào fakeProducts list
+end note
+
+fakeProductRepo --> productService : ProductEntity (với id = 3)
+deactivate fakeProductRepo
+
+productService --> testClass : ProductEntity
+deactivate productService
+
+== Assert ==
+
+testClass -> testClass : assertNotNull(result)
+testClass -> testClass : assertNotNull(result.getId())
+testClass -> testClass : assertEquals("Laptop Dell XPS 15", result.getName())
+testClass -> testClass : assertEquals(new BigDecimal("35000000"), result.getPrice())
+testClass -> testClass : assertEquals(50, result.getQuantity())
+testClass -> testClass : assertEquals(Category.DIEN_TU, result.getCategory())
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

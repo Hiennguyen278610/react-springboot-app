@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-// unused Jpa imports removed
 
 import com.flogin.backend.baseFake.BaseFakeProductRepository;
 import com.flogin.dto.product.ProductRequest;
@@ -88,7 +87,8 @@ public class ProductServiceTest {
             @Override
             public Optional<ProductEntity> findById(Long id) {
                 for (ProductEntity p : fakeProducts) {
-                    if (p.getId().equals(id)) return Optional.of(p);
+                    if (p.getId().equals(id))
+                        return Optional.of(p);
                 }
                 return Optional.empty();
             }
@@ -107,7 +107,6 @@ public class ProductServiceTest {
         productService = new ProductService(fakeProductRepository);
     }
 
-
     @Test
     @DisplayName("TC_PRODUCT_001: Tạo sản phẩm thành công với dữ liệu hợp lệ")
     void testCreateSuccess() {
@@ -117,8 +116,7 @@ public class ProductServiceTest {
                 new BigDecimal("35000000"),
                 50,
                 "Laptop cao cấp Dell XPS 15",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ProductEntity result = productService.create(request);
@@ -141,14 +139,13 @@ public class ProductServiceTest {
                 new BigDecimal("26000000"),
                 50,
                 "Điện thoại mới",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ExistsException exception = assertThrows(ExistsException.class, () -> {
             productService.create(request);
         });
-        
+
         // Assert
         assertEquals("Tên sản phẩm đã tồn tại", exception.getMessage());
     }
@@ -179,7 +176,7 @@ public class ProductServiceTest {
     @Test
     @DisplayName("TC_PRODUCT_005: Lấy sản phẩm thất bại khi ID không tồn tại")
     void testGetByIdNotFound() {
-        // Action 
+        // Action
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             productService.getById(999L);
         });
@@ -199,7 +196,6 @@ public class ProductServiceTest {
         assertEquals("Điện thoại iPhone 15", result.get(0).getName());
     }
 
-
     @Test
     @DisplayName("TC_PRODUCT_007: Xóa sản phẩm thành công")
     void testDeleteSuccess() {
@@ -214,11 +210,10 @@ public class ProductServiceTest {
         assertFalse(fakeProducts.stream().anyMatch(p -> p.getId().equals(1L)));
     }
 
-
     @Test
     @DisplayName("TC_PRODUCT_008: Xóa sản phẩm thất bại khi ID không tồn tại")
     void testDeleteNotFound() {
-        // Action 
+        // Action
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             productService.delete(999L);
         });
@@ -235,8 +230,7 @@ public class ProductServiceTest {
                 new BigDecimal("30000000"),
                 80,
                 "Phiên bản nâng cấp",
-                Category.DIEN_TU
-        );
+                Category.DIEN_TU);
 
         // Action
         ProductEntity result = productService.update(1L, request);
@@ -258,10 +252,9 @@ public class ProductServiceTest {
                 new BigDecimal("100000"),
                 10,
                 "Mô tả",
-                Category.KHAC
-        );
+                Category.KHAC);
 
-        // Action 
+        // Action
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             productService.update(999L, request);
         });

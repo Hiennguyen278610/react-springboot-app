@@ -1,0 +1,61 @@
+@startuml TC_LOGIN_002
+title Sequence Diagram Test: TC_LOGIN_002 - Đăng nhập thất bại khi user không tồn tại
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":AuthServiceTest"
+participant authService as ":AuthService"
+participant fakeUserRepo as ":FakeUserRepository"
+
+note left of tester
+    Unit Test: Kiểm tra đăng nhập
+    thất bại khi username không
+    tồn tại trong hệ thống
+end note
+
+== Arrange ==
+
+tester -> testClass : testAuthUserNotFound()
+activate testClass
+
+testClass -> testClass : loginRequest = new LoginRequest("hyanNega123", "password123")
+
+== Action ==
+
+testClass -> testClass : assertThrows(NotFoundException.class, () -> {...})
+activate testClass
+
+testClass -> authService : authenticate(loginRequest: LoginRequest)
+activate authService
+
+authService -> fakeUserRepo : findByUsername("hyanNega123")
+activate fakeUserRepo
+
+note left of fakeUserRepo
+    Fake data: chỉ có username "hyan123"
+    → "hyanNega123" không tồn tại
+end note
+
+fakeUserRepo --> authService : Optional.empty()
+deactivate fakeUserRepo
+
+authService --> testClass : throw NotFoundException("Tài khoản hoặc mật khẩu không đúng")
+deactivate authService
+
+deactivate testClass
+
+== Assert ==
+
+testClass -> testClass : assertEquals("Tài khoản hoặc mật khẩu không đúng", exception.getMessage())
+
+alt Basic Flow: Exception được ném và message đúng
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Không có exception hoặc message sai
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

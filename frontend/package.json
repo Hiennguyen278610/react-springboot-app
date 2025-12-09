@@ -16,7 +16,14 @@
     "cy:run": "cypress run",
     "cy:run:headed": "cypress run --headed",
     "test:e2e": "cypress run",
-    "test:e2e:open": "cypress open"
+    "test:e2e:open": "cypress open",
+    "test:mock": "vitest --run src/tests/mock",
+    "test:integration": "vitest --run src/tests/integration",
+    "test:unit": "vitest --run src/tests/unit",
+    "coverage:mock": "vitest --run --coverage src/tests/mock",
+    "coverage:integration": "vitest --run --coverage src/tests/integration",
+    "coverage:unit": "vitest --run --coverage src/tests/unit",
+    "coverage:all": "vitest --run --coverage"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -58,6 +65,7 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
+    "@vitest/coverage-v8": "^4.0.14",
     "@vitest/ui": "^4.0.14",
     "cypress": "^15.7.0",
     "eslint": "^9.36.0",

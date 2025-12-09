@@ -40,11 +40,10 @@ public class ProductService {
 
     public ProductEntity update(Long id, ProductRequest req) {
         ProductEntity entity = getById(id);
-        
-        // Check if new name already exists (excluding current product)
+
         if (!entity.getName().equals(req.getName()) && repo.existsByName(req.getName()))
             throw new ExistsException("Tên sản phẩm đã tồn tại");
-        
+
         ProductMapper.updateEntity(entity, req);
         return repo.save(entity);
     }

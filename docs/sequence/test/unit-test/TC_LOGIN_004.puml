@@ -1,0 +1,76 @@
+@startuml TC_LOGIN_004
+title Sequence Diagram Test: TC_LOGIN_004 - Lấy người dùng hiện tại thành công với token hợp lệ
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":AuthServiceTest"
+participant authService as ":AuthService"
+participant fakeJwtProvider as ":FakeJwtTokenProvider"
+participant fakeUserRepo as ":FakeUserRepository"
+
+note left of tester
+    Unit Test: Kiểm tra lấy thông tin
+    người dùng hiện tại thành công
+    với token JWT hợp lệ
+end note
+
+== Arrange ==
+
+tester -> testClass : testGetCurrentUserSuccess()
+activate testClass
+
+testClass -> testClass : authorizationHeader = "Bearer fake-jwt-token-2k5"
+
+== Action ==
+
+testClass -> authService : getCurrentUser(authorizationHeader: String)
+activate authService
+
+authService -> authService : token = authorizationHeader.substring(7)
+note left
+    Cắt "Bearer " để lấy token
+    → token = "fake-jwt-token-2k5"
+end note
+
+authService -> fakeJwtProvider : validateToken("fake-jwt-token-2k5")
+activate fakeJwtProvider
+
+note left of fakeJwtProvider
+    Fake logic: token == "fake-jwt-token-2k5"
+    → true (token hợp lệ)
+end note
+
+fakeJwtProvider --> authService : true
+deactivate fakeJwtProvider
+
+authService -> fakeJwtProvider : getUsernameFromToken("fake-jwt-token-2k5")
+activate fakeJwtProvider
+fakeJwtProvider --> authService : "hyan123"
+deactivate fakeJwtProvider
+
+authService -> fakeUserRepo : findByUsername("hyan123")
+activate fakeUserRepo
+fakeUserRepo --> authService : Optional.of(fakeUser)
+deactivate fakeUserRepo
+
+authService -> authService : UserMapper.toResponse(user: UserEntity)
+authService --> testClass : UserResponse(id, username, mail)
+deactivate authService
+
+== Assert ==
+
+testClass -> testClass : assertNotNull(response)
+testClass -> testClass : assertEquals("hyan123", response.getUsername())
+testClass -> testClass : assertEquals("hyan123@gmail.com", response.getMail())
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

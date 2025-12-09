@@ -1,0 +1,66 @@
+@startuml TC_LOGIN_006
+title Sequence Diagram Test: TC_LOGIN_006 - Lỗi khi token không hợp lệ
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":AuthServiceTest"
+participant authService as ":AuthService"
+participant fakeJwtProvider as ":FakeJwtTokenProvider"
+
+note left of tester
+    Unit Test: Kiểm tra lỗi khi
+    JWT token không hợp lệ
+end note
+
+== Arrange ==
+
+tester -> testClass : testGetCurrentUserInvalidToken()
+activate testClass
+
+testClass -> testClass : authorizationHeader = "Bearer haha-token"
+
+== Action ==
+
+testClass -> testClass : assertThrows(AuthException.class, () -> {...})
+activate testClass
+
+testClass -> authService : getCurrentUser(authorizationHeader: String)
+activate authService
+
+authService -> authService : token = authorizationHeader.substring(7)
+note left
+    Cắt "Bearer " để lấy token
+    → token = "haha-token"
+end note
+
+authService -> fakeJwtProvider : validateToken("haha-token")
+activate fakeJwtProvider
+
+note left of fakeJwtProvider
+    Fake logic: token == "fake-jwt-token-2k5"
+    "haha-token" != "fake-jwt-token-2k5" → false
+end note
+
+fakeJwtProvider --> authService : false
+deactivate fakeJwtProvider
+
+authService --> testClass : throw AuthException("Token không hợp lệ", UNAUTHORIZED)
+deactivate authService
+
+deactivate testClass
+
+== Assert ==
+
+testClass -> testClass : assertEquals("Token không hợp lệ", exception.getMessage())
+
+alt Basic Flow: AuthException được ném và message đúng
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Không có exception hoặc message sai
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml

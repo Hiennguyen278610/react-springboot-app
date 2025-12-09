@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { 
-    validateUsername, 
-    validatePassword, 
-    validateEmail, 
+import {
+    validateUsername,
+    validatePassword,
+    validateEmail,
     PATTERNS,
     MESSAGES
-} from '../utils/validation';
+} from '@/utils/validation';
 
 describe('Auth / User Validation Utils', () => {
     describe('Username Validation', () => {

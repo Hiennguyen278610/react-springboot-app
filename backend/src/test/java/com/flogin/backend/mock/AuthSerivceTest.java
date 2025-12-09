@@ -56,7 +56,6 @@ public class AuthSerivceTest {
 				.mail("hyan123@gmail.com")
 				.build();
 
-		// default stubs for the common user
 		lenient().when(userRepository.findByUsername("hyank23")).thenReturn(Optional.of(mockUser));
 		lenient().when(passwordEncoder.matches("sugoi123", "encodedPassword")).thenReturn(true);
 		lenient().when(jwtTokenProvider.generateToken("hyank23")).thenReturn("jwt-token");

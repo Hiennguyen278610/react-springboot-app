@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { 
+import {
     validateProductPrice,
     MESSAGES,
     commonValidations
-} from '../utils/validation';
+} from '@/utils/validation';
 
 describe('Product Validation Utils', () => {
     describe('Product Price Validation', () => {

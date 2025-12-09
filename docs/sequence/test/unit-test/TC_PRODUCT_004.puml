@@ -1,0 +1,60 @@
+@startuml TC_PRODUCT_004
+title Sequence Diagram Test: TC_PRODUCT_004 - Lấy sản phẩm theo ID thành công
+
+autonumber
+
+actor "Tester" as tester
+
+participant testClass as ":ProductServiceTest"
+participant productService as ":ProductService"
+participant fakeProductRepo as ":FakeProductRepository"
+
+note left of tester
+    Unit Test: Kiểm tra lấy thông tin
+    sản phẩm theo ID thành công
+end note
+
+== Arrange ==
+
+tester -> testClass : testGetByIdSuccess()
+activate testClass
+
+note left of testClass
+    Fake data: fakeProduct1 có id = 1L
+    name = "Điện thoại iPhone 15"
+end note
+
+== Action ==
+
+testClass -> productService : getById(1L)
+activate productService
+
+productService -> fakeProductRepo : findById(1L)
+activate fakeProductRepo
+
+note left of fakeProductRepo
+    Fake logic: tìm trong fakeProducts list
+    có product với id = 1 → tìm thấy
+end note
+
+fakeProductRepo --> productService : Optional.of(fakeProduct1)
+deactivate fakeProductRepo
+
+productService --> testClass : ProductEntity
+deactivate productService
+
+== Assert ==
+
+testClass -> testClass : assertNotNull(result)
+testClass -> testClass : assertEquals(1L, result.getId())
+testClass -> testClass : assertEquals("Điện thoại iPhone 15", result.getName())
+
+alt Basic Flow: Tất cả assertions pass
+    testClass --> tester : ✅ Test PASSED
+else Exception Flow: Assertion failed
+    testClass --> tester : ❌ Test FAILED
+end
+
+deactivate testClass
+
+@enduml
