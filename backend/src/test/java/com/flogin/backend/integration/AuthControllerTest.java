@@ -39,6 +39,9 @@ public class AuthControllerTest {
     private UserRepository userRepository;
     private UserEntity testUser;
 
+    private String originUrl = "Access-Control-Allow-Origin";
+    private String originCredentials = "Access-Control-Allow-Credentials";
+
     @BeforeEach
     void setUp() {
         testUser = new UserEntity();
@@ -148,14 +151,15 @@ public class AuthControllerTest {
         String response = performPost("/auth/login", loginRequest).andReturn().getResponse().getContentAsString();
         String token = objectMapper.readTree(response).get("token").asText();
 
-        // Action - Gọi /auth/me với token và Origin header
+        // Action
         ResultActions action = mockMvc.perform(get("/auth/me")
                 .header("Authorization", "Bearer " + token)
                 .header("Origin", origin));
 
         // Assert
         action.andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", origin))
-                .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
+                .andExpect(header().string(originUrl, origin))
+                .andExpect(header().string(originCredentials, "true"));
     }
+
 }

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,21 @@ public class AuthControllerTest {
         mockLoginResponse = new LoginResponse(true, "Đăng nhập thành công", "jwt-token", mockUserResponse);
     }
 
+    private ResultActions performPost(String url, Object body) throws Exception {
+        return mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
+    }
+
+    private ResultActions performGet(String url, String authHeader) throws Exception {
+        return mockMvc.perform(get(url)
+                .header("Authorization", authHeader));
+    }
+
+    private ResultActions performGet(String url) throws Exception {
+        return mockMvc.perform(get(url));
+    }
+
     @Test
     @DisplayName("TC_LOGINCRTL_001: Đăng nhập thành công với credentials hợp lệ")
     void testLoginSuccess() throws Exception {
@@ -60,9 +76,7 @@ public class AuthControllerTest {
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(mockLoginResponse);
 
         // Action & Assert
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
+        performPost("/auth/login", loginRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Đăng nhập thành công"))
@@ -81,9 +95,7 @@ public class AuthControllerTest {
                 .thenThrow(new NotFoundException("Tài khoản hoặc mật khẩu không đúng"));
 
         // Action & Assert
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
+        performPost("/auth/login", loginRequest)
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Tài khoản hoặc mật khẩu không đúng"));
     }
@@ -97,9 +109,7 @@ public class AuthControllerTest {
                 .thenThrow(new AuthException("Mật khẩu không chính xác", HttpStatus.UNAUTHORIZED));
 
         // Action & Assert
-        mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
+        performPost("/auth/login", loginRequest)
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Mật khẩu không chính xác"));
     }
@@ -112,8 +122,7 @@ public class AuthControllerTest {
         when(authService.getCurrentUser(eq(authHeader))).thenReturn(mockUserResponse);
 
         // Action & Assert
-        mockMvc.perform(get("/auth/me")
-                .header("Authorization", authHeader))
+        performGet("/auth/me", authHeader)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.username").value("hyank23"))
@@ -128,7 +137,7 @@ public class AuthControllerTest {
                 .thenThrow(new AuthException("Thiếu header xác thực", HttpStatus.UNAUTHORIZED));
 
         // Action & Assert
-        mockMvc.perform(get("/auth/me"))
+        performGet("/auth/me")
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Thiếu header xác thực"));
     }
@@ -142,8 +151,7 @@ public class AuthControllerTest {
                 .thenThrow(new AuthException("Token không hợp lệ", HttpStatus.UNAUTHORIZED));
 
         // Action & Assert
-        mockMvc.perform(get("/auth/me")
-                .header("Authorization", authHeader))
+        performGet("/auth/me", authHeader)
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Token không hợp lệ"));
     }

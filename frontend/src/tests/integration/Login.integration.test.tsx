@@ -70,7 +70,7 @@ describeLoginIntegration("Login Page Integration", () => {
 		})
 	})
 
-		describe("b) - Form submission & API calls", () => {
+	describe("b) - Form submission & API calls", () => {
 		it("TC_LOGIN_003: Gọi API đăng nhập thành công và chuyển hướng người dùng", async () => {
 			// Arrange
 			const user = userEvent.setup()
@@ -116,7 +116,7 @@ describeLoginIntegration("Login Page Integration", () => {
 		})
 	})
 
-		describe("c) - Error handling & thông điệp phản hồi", () => {
+	describe("c) - Error handling & thông điệp phản hồi", () => {
 		it("TC_LOGIN_005: Hiển thị lỗi từ state của router khi được chuyển tiếp", () => {
 			// Arrange
 			const message = "Phiên đăng nhập đã hết hạn"
